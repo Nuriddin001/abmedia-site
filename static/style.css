@@ -378,7 +378,7 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 /* 07 Abror */
 .why{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(24px,4vw,64px);align-items:center}
 .why-ph{position:relative;border-radius:26px;overflow:hidden;aspect-ratio:4/5;background:var(--black)}
-.why-ph img{width:100%;height:100%;object-fit:cover;object-position:62% 30%;transform:scale(1.12);will-change:transform}
+.why-ph img{width:100%;height:100%;object-fit:cover;object-position:50% 32%;transform:scale(1.12);will-change:transform}
 .no-motion .why-ph img{transform:none}
 .why-ph figcaption{position:absolute;left:14px;right:14px;bottom:14px;display:grid;gap:2px;padding:12px 16px;border-radius:14px;background:rgba(11,13,15,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--edge)}
 .why-ph figcaption span{color:var(--mist);font-size:.9rem}
@@ -407,6 +407,8 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .chip.full{background:var(--snow);color:var(--ink)}
 .chip.sup{border:1.5px solid var(--tungsten);color:var(--tungsten)}
 .chip.you,.chip.opt{border:1.5px dashed var(--dim);color:var(--mist)}
+.step-t{display:grid;gap:4px;min-width:0}
+.step-t p{color:var(--mist);font-size:.98rem;line-height:1.45}
 @media (max-width:640px){.step{grid-template-columns:56px minmax(0,1fr);gap:6px 18px}.step .chip{grid-column:2;justify-self:start}}
 
 /* 09 planner */

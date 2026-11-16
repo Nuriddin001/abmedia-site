@@ -414,11 +414,12 @@ function setDuel(p){
 
 /* ---------- planner ---------- */
 function recommend(){
+  /* AB Media's own steps: audit, positioning, story, content, go-to-market, then running the campaign */
   const { goal, have, dist } = builder; let fmtI, stages;
-  if (have === "agency") { fmtI = 0; stages = ["preS", "prodS", "postS"]; }
-  else if (have === "idea") { fmtI = 1; stages = ["s", "pre", "prod", "post"]; }
-  else { fmtI = 1; stages = ["c", "s", "pre", "prod", "post"]; }
-  if (dist === "yes") { stages = stages.concat("dist"); if (fmtI === 1) fmtI = 2; }
+  if (have === "agency") { fmtI = 0; stages = ["aud", "story", "contS", "gtm"]; }
+  else if (have === "idea") { fmtI = 1; stages = ["aud", "story", "cont", "gtm"]; }
+  else { fmtI = 1; stages = ["aud", "pos", "story", "cont", "gtm"]; }
+  if (dist === "yes") { stages = stages.concat("run"); if (fmtI === 1) fmtI = 2; }
   const pick = have === "agency"
     ? { launch: "IMZO", trust: "Grand Capital", explain: "Uztelecom", social: "ZO'R TV" }[goal]
     : { launch: "Good Day Cappuccino", trust: "To'xtaniyoz Ota", explain: "Sales Doctor Academy", social: "ZO'R TV" }[goal];
@@ -441,7 +442,7 @@ function renderBuilder(){
 function goForm(){ goTo("#request"); setTimeout(() => $("#f-name").focus({ preventScroll: true }), reduce ? 0 : 1100); }
 /* the answer is shown as an edit in progress: a monitor playing a similar film with the format as a
    lower third, and an editing timeline where every stage is a clip and a playhead runs over them */
-const STAGE_W = { c: 1, s: 1.2, sVO: 1.2, pre: 1.4, prod: 1.7, post: 1.6, dist: 1.2, preS: 1.4, prodS: 1.7, postS: 1.6 };
+const STAGE_W = { aud: .9, pos: 1, story: 1.3, cont: 1.7, contS: 1.7, gtm: 1.4, run: 1.6 };
 const desk = { raf: 0, on: false, t0: performance.now(), lastCase: -1 };
 function renderResult(){
   const t = T(), r = recommend(), box = $("#bres"), cs = CASES[r.ci];
@@ -513,12 +514,14 @@ function renderProcess(){
   const t = T();
   $$("#modes button").forEach(b => { const m = +b.dataset.m; b.textContent = t.modes[m]; b.setAttribute("aria-pressed", String(m === mode)); });
   $("#mode-d").textContent = t.mode_d[mode];
-  const kinds = mode === 0 ? ["full", "full", "full", "full", "full", "full"] : ["you", "you", "sup", "sup", "sup", "opt"];
+  /* with your team: they make the content, AB Media leads the rest */
+  const kinds = mode === 0 ? ["full", "full", "full", "full", "full", "full"] : ["full", "full", "full", "you", "sup", "sup"];
   const ol = $("#steps"), on = $$("#steps .step.on").length;
   ol.replaceChildren();
-  t.steps.forEach((h, i) => {
+  t.steps.forEach(([h, p], i) => {
     const li = el("li", "step" + (kinds[i] === "you" ? " off" : "") + (i < on ? " on" : ""));
-    li.append(el("span", "n", "0" + (i + 1)), el("h3", null, h), el("span", "chip " + kinds[i], t.chip[kinds[i]]));
+    const tx = el("div", "step-t"); tx.append(el("h3", null, h), el("p", null, p));
+    li.append(el("span", "n", "0" + (i + 1)), tx, el("span", "chip " + kinds[i], t.chip[kinds[i]]));
     ol.append(li);
   });
 }
@@ -613,7 +616,7 @@ function bindPreviews(){
 /* ---------- what happens next: three big frames on one strip of film ---------- */
 const SHOTS = [
   { img: "/media/portrait.jpg", pos: "30% 72%", zoom: 1.35, hud: "READING", kind: "scan" },
-  { img: "/media/portrait.jpg", pos: "62% 26%", zoom: 1.7, hud: "LIVE · 00:30:00", kind: "wave" },
+  { img: "/media/abror-timessquare.jpg", pos: "50% 38%", zoom: 1.08, hud: "LIVE · 00:30:00", kind: "wave" },
   { img: "/media/sales-doctor-backstage.jpg", pos: "50% 45%", zoom: 1.15, hud: "CONCEPT v1", kind: "grid" }
 ];
 function renderShots(t){
