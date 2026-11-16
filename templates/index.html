@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AB Media Brand Films</title>
+<meta name="description" content="AB Media: brand films that make customers know you and trust you. One producer from concept to release.">
+<meta property="og:title" content="AB Media — brand films for awareness and trust">
+<meta property="og:image" content="/media/uztelecom.jpg">
+<meta name="theme-color" content="#0B0D0F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Noto+Kufi+Arabic:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/static/style.css">
+<script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-arrow" viewBox="0 0 20 20"><path d="M3 10h13M11 5l5 5-5 5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M6 6l8 8M14 6l-8 8"/></symbol>
+  <symbol id="i-play" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5z"/></symbol>
+  <symbol id="i-reel" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="7.3" r="1.7"/><circle cx="16.5" cy="10.6" r="1.7"/><circle cx="14.8" cy="15.9" r="1.7"/><circle cx="9.2" cy="15.9" r="1.7"/><circle cx="7.5" cy="10.6" r="1.7"/></symbol>
+  <symbol id="i-clap" viewBox="0 0 24 24"><path d="M3.5 10.5h17v9.5h-17zM3.5 10.5l-.6-3.8 16.4-2.6.6 3.8zM8.2 6l2 4.5M13.7 5.1l2 4.6"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><circle cx="9" cy="12" r="5.2"/><circle cx="15" cy="12" r="5.2"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r=".9"/></symbol>
+</svg>
+
+<!-- opening slate: letterbox bars part -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="lb lb-t"></div><div class="lb lb-b"></div>
+  <div class="intro-c"><i class="dot"></i><span id="intro-tc">00:00:00:00</span></div>
+</div>
+
+<div class="cur" id="cur" aria-hidden="true"><svg class="ic"><use href="#i-play"/></svg><span data-i="cur_play"></span></div>
+
+<div class="offer away" id="offer"><div class="wrap"><span id="bar-t"></span><span class="timer" id="timer">05:00</span></div></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="AB Media"><i aria-hidden="true"></i>AB MEDIA</a>
+    <span class="scene" id="scene" aria-hidden="true"><b id="scene-n">01</b><span id="scene-t"></span></span>
+    <nav class="nav" id="nav" aria-label="Sections"><a href="#journey"></a><a href="#cases"></a><a href="#how"></a><a href="#faq"></a></nav>
+    <div class="langs" role="group" aria-label="Language"><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="ar">AR</button></div>
+    <a class="btn btn-t btn-sm" href="#request" data-i="hero_cta"></a>
+  </div>
+  <i class="prog" id="prog" aria-hidden="true"></i>
+</header>
+
+<main>
+  <!-- 01 a sky of screens; scrolling flies through them into one film -->
+  <section class="hero" id="top" data-scene="top">
+    <div class="hero-pin">
+      <div class="glow" aria-hidden="true"></div>
+      <canvas class="stars" id="stars" aria-hidden="true"></canvas>
+      <div class="reel" id="reel" data-cursor="play">
+        <div class="reel-media" id="reel-media"></div>
+        <div class="reel-shade"></div>
+        <div class="vf" aria-hidden="true">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+          <span class="hud h-tl"><i class="dot"></i>REC</span>
+          <span class="hud h-tr">TC <b id="tc">00:00:00:00</b></span>
+          <span class="hud h-br">4K · 25 FPS · 2.39 : 1</span>
+        </div>
+        <button class="reel-tag" type="button" id="reel-tag"><small data-i="reel_now"></small><b id="reel-name"></b><span id="reel-meta"></span></button>
+        <div class="segs" id="segs" aria-hidden="true"></div>
+      </div>
+      <div class="mark" aria-hidden="true"><span class="m-l"><b>AB</b></span><span class="m-r"><b>MEDIA</b></span></div>
+      <h1 class="sr" id="h1"></h1>
+      <p class="line" id="line" aria-hidden="true"></p>
+      <div class="hero-foot">
+        <p class="tag" data-i="hero_q"></p>
+        <div class="cue" aria-hidden="true"><span data-i="cue"></span><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 manifesto -->
+  <section class="manifest" id="manifest" data-scene="manifest">
+    <div class="wrap mf-in"><span class="eb" data-i="mf_eb"></span><p class="mf" id="mf"></p></div>
+  </section>
+
+  <section class="stats" aria-label="AB Media"><div class="wrap" id="stats"></div></section>
+
+  <!-- 03 customer journey -->
+  <section class="journey" id="journey" data-scene="journey">
+    <div class="story" id="story">
+      <div class="wrap story-in">
+        <div class="story-text">
+          <span class="eb" data-i="j_eb"></span>
+          <h2 data-i="j_h"></h2>
+          <ol class="beats" id="beats"></ol>
+        </div>
+        <div class="story-vis">
+          <div class="funnel" id="funnel">
+            <canvas id="flow" aria-hidden="true"></canvas>
+            <div class="cols" id="cols"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrap calc">
+      <div class="calc-head"><h3 class="calc-h" data-i="calc_h"></h3>
+        <div class="seg" role="group" id="jmode"><button type="button" data-m="0"></button><button type="button" data-m="1"></button></div></div>
+      <div class="reach"><label for="reach"><span data-i="c_reach"></span><output id="reach-o" for="reach"></output></label><input type="range" id="reach"></div>
+      <div class="jstages" id="jstages" aria-live="polite"></div>
+      <div class="jsum"><p id="jsum"></p><button class="btn btn-t mag" type="button" id="jsend"><span data-i="c_cta"></span><svg class="ic"><use href="#i-arrow"/></svg></button></div>
+      <p class="jnote" data-i="j_note"></p>
+    </div>
+  </section>
+
+  <!-- 04 ads vs brand film: one live chart, a playhead runs through time -->
+  <section class="duel" id="diff" data-scene="diff">
+    <div class="duel-pin">
+      <div class="wrap duel-in">
+        <div class="duel-head"><span class="eb" data-i="d_eb"></span><h2 data-i="d_h"></h2></div>
+        <div class="scope" id="scope">
+          <svg class="scope-svg" id="scope-svg" viewBox="0 0 1000 360" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <span class="end-t" id="end-t" data-i="d_end"></span>
+          <div class="probe ad" id="probe-ad"><i></i><b>0%</b><span data-i="d_ad"></span></div>
+          <div class="probe film" id="probe-film"><i></i><b>0%</b><span data-i="d_film"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 films -->
+  <section class="cases" id="cases" data-scene="cases">
+    <div class="strip"><div class="run" id="run" aria-hidden="true"></div><p class="sr" id="run-sr"></p></div>
+    <div class="hscroll" id="hscroll">
+      <div class="wrap hs-head"><div class="sh rv"><span class="eb" data-i="cs_eb"></span><h2 data-i="cs_h"></h2></div></div>
+      <div class="hs-pin" id="hs-pin">
+        <div class="wrap hs-bar"><div class="hs-count" aria-hidden="true"><b id="hs-i">01</b><span>/</span><span id="hs-n">09</span><em data-i="cs_hint"></em></div><i class="hs-prog" aria-hidden="true"><i id="hs-prog"></i></i></div>
+        <div class="track" id="track"></div>
+      </div>
+    </div>
+    <div class="wrap"><p class="more rv" id="more"></p></div>
+  </section>
+
+  <!-- 06 what we fix: each problem gets struck out and replaced -->
+  <section class="band" id="fixes" data-scene="fixes">
+    <div class="wrap">
+      <div class="sh sh-1 rv"><span class="eb" data-i="f_eb"></span><h2 data-i="f_h"></h2></div>
+      <ol class="fixes" id="fixlist"></ol>
+    </div>
+  </section>
+
+  <!-- 07 Abror -->
+  <section class="band band-2" id="why" data-scene="why">
+    <div class="wrap why">
+      <figure class="why-ph" id="why-ph"><img src="/media/portrait.jpg" alt="" id="why-img" width="1024" height="1024" loading="lazy"><figcaption><b data-i="name"></b><span data-i="role"></span></figcaption></figure>
+      <div class="why-r">
+        <div class="sh sh-1 rv"><span class="eb" data-i="why_eb"></span><h2 data-i="why_h"></h2></div>
+        <ul class="reasons" id="reasons"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 process -->
+  <section class="band" id="how" data-scene="how">
+    <div class="wrap">
+      <div class="sh rv"><span class="eb" data-i="how_eb"></span><h2 data-i="how_h"></h2></div>
+      <div class="seg modes" role="group" id="modes"><button type="button" data-m="0"></button><button type="button" data-m="1"></button></div>
+      <p class="mode-d" id="mode-d"></p>
+      <div class="tl" id="tl"><i class="tl-line" aria-hidden="true"><i id="tl-fill"></i></i><ol class="steps" id="steps"></ol></div>
+    </div>
+  </section>
+
+  <!-- 09 planner -->
+  <section class="band band-2" id="plan" data-scene="plan">
+    <div class="wrap">
+      <div class="sh sh-1 rv"><span class="eb" data-i="b_eb"></span><h2 data-i="b_h"></h2></div>
+      <div class="builder rv">
+        <form class="bq" id="bq"></form>
+        <div class="bres" id="bres" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 request -->
+  <section class="band" id="request" data-scene="request">
+    <div class="wrap rq">
+      <div class="sh sh-1 rv"><span class="eb" data-i="rq_eb"></span><h2 data-i="rq_h"></h2><p data-i="rq_p"></p></div>
+      <div class="rq-next"><p class="nx-h" data-i="nx_h"></p><div class="shots" id="shots"><i class="shots-line" aria-hidden="true"><i id="shots-fill"></i></i></div><p class="slots" id="slots"></p></div>
+      <div class="rq-slate">
+        <button class="slate" type="button" id="slate" aria-label="Clap">
+          <span class="slate-stick"></span>
+          <span class="slate-base"></span>
+          <span class="slate-board" id="slate-board"></span>
+        </button>
+      </div>
+      <div class="formcard rv">
+        <form class="form" id="form" novalidate>
+          <div class="brief" id="brief" hidden></div>
+          <label for="f-name"><span data-i="f_name"></span><input id="f-name" name="name" type="text" autocomplete="name" placeholder="Alex Morgan"><span class="err" id="e-name" hidden></span></label>
+          <label for="f-phone"><span data-i="f_phone"></span><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 555 010 2030"><span class="err" id="e-phone" hidden></span></label>
+          <label for="f-email"><span data-i="f_email"></span><input id="f-email" name="email" type="email" autocomplete="email" placeholder="name@company.com"><span class="err" id="e-email" hidden></span></label>
+          <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+          <button class="btn btn-t" type="submit"><span data-i="f_btn"></span><svg class="ic"><use href="#i-arrow"/></svg></button>
+          <p class="send-err" id="send-err" role="alert" hidden></p>
+          <p class="privacy" data-i="privacy"></p>
+        </form>
+        <div class="done" id="done" hidden aria-live="polite"><h3 data-i="done_h" tabindex="-1" id="done-h"></h3><p id="done-msg"></p><button type="button" class="linkbtn" id="again" data-i="again"></button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 questions -->
+  <section class="band band-2" id="faq" data-scene="faq">
+    <div class="wrap faqw">
+      <div class="sh sh-1 rv"><span class="eb" data-i="faq_eb"></span><h2 data-i="faq_h"></h2></div>
+      <div class="faq" id="faqlist"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="fm" id="fm" aria-label="AB Media"><i aria-hidden="true"></i></div>
+    <p class="foot-t" data-i="foot"></p>
+    <div class="contacts" id="contacts"></div>
+    <div class="legal"><span>© 2026 AB Media</span><span data-i="name"></span></div>
+  </div>
+</footer>
+
+<dialog class="room" id="room" aria-labelledby="room-title">
+  <div class="rh"><h3 id="room-title"></h3><button class="x" type="button" id="room-x"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+  <div class="rb">
+    <div><video id="room-v" controls playsinline preload="none"></video><div class="tabs" id="room-tabs" hidden></div></div>
+    <div><p class="concept" id="room-c"></p><dl id="room-dl"></dl></div>
+  </div>
+</dialog>
+
+<script>window.ABM_DATA = /*__SITE_DATA__*/null;</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="/static/i18n.js"></script>
+<script src="/static/motion.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
