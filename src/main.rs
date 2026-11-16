@@ -32,11 +32,14 @@ struct AppState {
     leads: leads::LeadStore,
 }
 
-fn render_page(site_json: &str) -> String {
+const PREVIEW_SLOT: &str = "/*__PREVIEW__*/false";
+
+/// `preview` is for the static export: there is no server behind it, so the form only shows its success state.
+fn render_page(site_json: &str, preview: bool) -> String {
     assert!(TEMPLATE.contains(DATA_SLOT), "templates/index.html lost its data slot");
     // Keep the JSON from closing the <script> tag it sits in.
     let safe = site_json.replace("</", "<\\/");
-    TEMPLATE.replacen(DATA_SLOT, &safe, 1)
+    TEMPLATE.replacen(DATA_SLOT, &safe, 1).replacen(PREVIEW_SLOT, if preview { "true" } else { "false" }, 1)
 }
 
 async fn index(State(st): State<Arc<AppState>>) -> Response {
@@ -70,7 +73,17 @@ async fn main() {
     let port: u16 = std::env::var("PORT").ok().and_then(|p| p.parse().ok()).unwrap_or(8080);
 
     let site_json = serde_json::to_string(&content::site()).expect("site data serialises");
-    let page = render_page(&site_json);
+
+    // `cargo run --release -- export` writes a ready index.html next to static/ and media/,
+    // so the folder can be served as plain files (Vercel, GitHub Pages) without this server.
+    if std::env::args().any(|a| a == "export") {
+        let out = root.join("index.html");
+        std::fs::write(&out, render_page(&site_json, true)).expect("write index.html");
+        println!("static preview written to {}", out.display());
+        return;
+    }
+
+    let page = render_page(&site_json, false);
     let state = Arc::new(AppState {
         page,
         site_json,
@@ -113,14 +126,16 @@ mod tests {
     #[test]
     fn page_gets_the_data() {
         let json = serde_json::to_string(&content::site()).unwrap();
-        let page = render_page(&json);
+        let page = render_page(&json, false);
         assert!(!page.contains(DATA_SLOT));
         assert!(page.contains("\"per_month\":"));
+        assert!(page.contains("window.ABM_PREVIEW = false"));
+        assert!(render_page(&json, true).contains("window.ABM_PREVIEW = true"));
     }
 
     #[test]
     fn script_close_is_escaped() {
-        let page = render_page(r#"{"x":"</script><b>"}"#);
+        let page = render_page(r#"{"x":"</script><b>"}"#, false);
         assert!(!page.contains(r#""</script><b>""#));
     }
 }
