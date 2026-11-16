@@ -78,8 +78,9 @@ pub fn site() -> SiteData {
             ar: "خياران إضافيان للفكرة مجانًا",
         },
         contacts: Contacts {
+            // Real US number (virtual line; its subscription runs to 27 Nov 2026, renew it or replace it)
+            phone: "+1 929 652 4542",
             // TAXMINIY: placeholders, replace with the real contacts
-            phone: "+998 90 000 00 00",
             telegram: "@abmedia_uz",
             instagram: "@abmedia.uz",
             email: "info@abmedia.uz",
