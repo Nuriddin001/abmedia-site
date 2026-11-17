@@ -567,13 +567,32 @@ $("#room-x").addEventListener("click", closeRoom);
 room.addEventListener("click", e => { if (e.target === room) closeRoom(); });
 room.addEventListener("close", () => { rv.pause(); rv.removeAttribute("src"); rv.load(); openIdx = -1; if (M()) M().pause(false); });
 
-/* ---------- 05 films: the horizontal reel ---------- */
+/* ---------- 05 films: two on show, the rest behind "More films" ---------- */
 const ORDER = FEAT.map(byClient).concat(CASES.map((_, i) => i).filter(i => !FEAT.includes(CASES[i].client)));
+const SHOWN = 2;
+let filmsOpen = false;
+function setFilmsLabel(){
+  const t = T(), btn = $("#more-btn");
+  $("#more-lbl").textContent = filmsOpen ? t.cs_less : t.cs_more;
+  $("#more-n").textContent = filmsOpen ? "" : "+" + (ORDER.length - SHOWN);
+  btn.setAttribute("aria-expanded", String(filmsOpen));
+  btn.classList.toggle("open", filmsOpen);
+}
+function toggleFilms(){
+  filmsOpen = !filmsOpen;
+  $("#track").classList.toggle("open", filmsOpen);
+  setFilmsLabel();
+  const extra = $$("#track .cc.extra");
+  if (filmsOpen && window.gsap && !reduce) gsap.fromTo(extra, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .6, ease: "power3.out", stagger: .07, clearProps: "opacity,transform" });
+  if (!filmsOpen) { extra.forEach(c => preview(c.querySelector(".cc-media"), false)); if (M()) M().scrollTo("#cases"); }
+  requestAnimationFrame(() => { if (M()) M().settle(); });
+}
+$("#more-btn").addEventListener("click", toggleFilms);
 function renderCases(){
   const t = T(), track = $("#track"); track.replaceChildren();
   ORDER.forEach((i, k) => {
     const c = CASES[i], big = FEAT.includes(c.client), m = metric(c.client);
-    const card = el("article", "cc" + (big ? " big" : ""));
+    const card = el("article", "cc" + (big ? " big" : "") + (k >= SHOWN ? " extra" : ""));
     const media = el("button", "cc-media"); media.type = "button"; media.dataset.cursor = "play"; media.dataset.video = c.video;
     media.setAttribute("aria-label", t.open_case + ": " + c.client);
     const im = el("img"); im.src = "/media/" + c.video + ".jpg"; im.alt = ""; im.loading = "lazy";
@@ -587,7 +606,7 @@ function renderCases(){
     if (big && m.result) card.append(el("p", "res", tr(m.result)));
     track.append(card);
   });
-  $("#hs-n").textContent = String(ORDER.length).padStart(2, "0");
+  setFilmsLabel();
   $("#more").textContent = fill(t.more, DATA.more);
   const run = $("#run"); run.replaceChildren();
   for (let r = 0; r < 2; r++) CASES.forEach(c => run.append(el("span", null, c.client)));

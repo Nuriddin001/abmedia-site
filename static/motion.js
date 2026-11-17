@@ -1,7 +1,7 @@
 /* AB Media landing: scroll choreography (GSAP + ScrollTrigger + Lenis). No 3D.
    01 stars swirl into a galaxy between AB and MEDIA; scrolling condenses it into a frame of light that becomes
       the film, and one line comes into focus. 02 the manifesto lights up word by word. 03 the customer journey snaps
-      through four beats. 04 a playhead runs through time on the ads-vs-film chart. 05 the films slide sideways.
+      through four beats. 04 a playhead runs through time on the ads-vs-film chart. 05 two films, the rest open on "More films".
    Motion rules (Emil Kowalski standards): enter/exit ease-out, on-screen movement ease-in-out, UI under 300 ms,
    marketing scenes longer; only transform/opacity/clip-path/filter; reduced motion keeps fades, drops movement. */
 (() => {
@@ -9,7 +9,7 @@
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const root = document.documentElement;
-const ABM = window.ABM_MOTION = { ready: false, init, refresh, scrollTo, pause };
+const ABM = window.ABM_MOTION = { ready: false, init, refresh, scrollTo, pause, settle: () => built && settle() };
 let api = null, lenis = null, content = [], built = false;
 
 function init(a){
@@ -33,7 +33,7 @@ function init(a){
   anchors();
   stepper();
   progress(); scenes(); offer();
-  story(); duel(); films(); portrait(); timeline(); shots(); stats(); mark();
+  story(); duel(); portrait(); timeline(); shots(); stats(); mark();
   buildContent();
   ScrollTrigger.addEventListener("refresh", () => api.flowLayout());
   built = true;
@@ -239,25 +239,6 @@ function stepper(){
       }
     }, 160);
   }, { passive: true });
-}
-
-/* ---------- 05 films: vertical scroll drives a horizontal reel (wide screens) ---------- */
-function films(){
-  const mm = gsap.matchMedia();
-  mm.add("(min-width: 900px)", () => {
-    const track = $("#track"), n = () => $$("#track .cc").length;
-    const dist = () => Math.max(0, track.scrollWidth - innerWidth);
-    gsap.to(track, {
-      x: () => -dist(), ease: "none",
-      scrollTrigger: {
-        trigger: "#hs-pin", start: "top top", end: () => "+=" + dist(), pin: true, scrub: .6, invalidateOnRefresh: true,
-        onUpdate: s => {
-          $("#hs-i").textContent = String(Math.min(n(), Math.round(s.progress * (n() - 1)) + 1)).padStart(2, "0");
-          $("#hs-prog").style.transform = "scaleX(" + s.progress.toFixed(4) + ")";
-        }
-      }
-    });
-  });
 }
 
 /* ---------- 07 portrait opens like an iris, the photo settles ---------- */

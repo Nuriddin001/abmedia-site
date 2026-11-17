@@ -317,21 +317,23 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .run span::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--tungsten)}
 @media (hover:hover){.strip:hover .run{animation-play-state:paused}}
 @keyframes run{to{transform:translateX(-50%)}}
-.hscroll{position:relative;padding-top:clamp(64px,8vw,110px);overflow:hidden}
-.hs-head .sh{margin-bottom:clamp(20px,3vw,32px)}
-.hs-pin{display:grid;grid-template-columns:minmax(0,1fr);align-content:center;gap:22px;overflow:hidden;min-width:0;min-height:100vh;min-height:100svh;padding-block:84px 32px;direction:ltr}
-.hs-bar{display:flex;align-items:center;gap:20px}
-.hs-count{display:flex;align-items:baseline;gap:8px;font:600 .9rem/1 var(--f-mono);color:var(--mist);font-variant-numeric:tabular-nums;flex:none}
-.hs-count b{font:600 2.2rem/1 var(--f-mark);color:var(--snow);letter-spacing:-.03em}
-.hs-count em{font-style:normal;margin-left:12px;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase}
-.hs-prog{position:relative;flex:1;height:2px;background:var(--edge);border-radius:2px;overflow:hidden}
-.hs-prog i{position:absolute;inset:0;background:var(--tungsten);transform-origin:left;transform:scaleX(0)}
-.track{display:flex;gap:20px;width:max-content;padding-inline:var(--pad);will-change:transform}
-.cc{flex:none;width:clamp(290px,30vw,460px);display:grid;gap:14px;align-content:start}
-[dir="rtl"] .cc{direction:rtl}
-.cc.big{width:clamp(320px,42vw,640px)}
-.cc-media{position:relative;display:block;width:100%;aspect-ratio:16/10;padding:0;border:0;border-radius:20px;overflow:hidden;background:var(--black);cursor:pointer}
-.cc.big .cc-media{aspect-ratio:16/9}
+.films{padding-top:clamp(64px,8vw,110px)}
+.films .sh{margin-bottom:clamp(24px,3.4vw,40px)}
+.track{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,3.4vw,44px) clamp(18px,2.4vw,32px)}
+.cc{min-width:0;display:grid;gap:14px;align-content:start}
+.cc.extra{display:none}
+.track.open .cc.extra{display:grid}
+.cc-media{position:relative;display:block;width:100%;aspect-ratio:16/9;padding:0;border:0;border-radius:20px;overflow:hidden;background:var(--black);cursor:pointer}
+.more-btn{display:flex;align-items:center;gap:12px;margin:clamp(32px,4vw,48px) auto 0;padding:15px 18px 15px 24px;border:1px solid var(--edge-2);border-radius:999px;background:transparent;color:var(--snow);font:600 1rem/1 var(--f-mark);cursor:pointer;transition:border-color .2s var(--ease-out),background-color .2s var(--ease-out),transform .16s var(--ease-out)}
+.more-btn b{font:600 .8rem/1 var(--f-mono);color:var(--tungsten);font-variant-numeric:tabular-nums;direction:ltr}
+.more-btn b:empty{display:none}
+.more-btn i{position:relative;width:30px;height:30px;border-radius:50%;background:var(--tungsten);transition:transform .3s var(--ease-out)}
+.more-btn i::before,.more-btn i::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;margin:-1px 0 0 -6px;border-radius:2px;background:var(--night)}
+.more-btn i::after{transform:rotate(90deg);transition:transform .3s var(--ease-out)}
+.more-btn.open i::after{transform:rotate(0deg)}
+.more-btn:active{transform:scale(.97)}
+.more-btn:focus-visible{outline:2px solid var(--tungsten);outline-offset:3px}
+@media (hover:hover) and (pointer:fine){.more-btn:hover{border-color:var(--tungsten);background:rgba(244,166,42,.06)}.more-btn:hover i{transform:rotate(90deg)}}
 .cc-media img,.cc-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .cc-media img{transition:transform .9s var(--ease-out),opacity .4s ease}
 .cc-media video{opacity:0;transition:opacity .4s ease}
@@ -350,13 +352,7 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .linkbtn{justify-self:start;display:inline-flex;align-items:center;gap:8px;padding:0;border:0;background:none;color:var(--tungsten);font-weight:700;cursor:pointer}
 .linkbtn .ic{width:18px;height:18px;transition:transform .2s var(--ease-out)}
 .more{margin-top:clamp(32px,4vw,48px);padding:18px 22px;border:1px dashed var(--edge-2);border-radius:16px;color:var(--mist)}
-@media (max-width:899px){
-  .track{overflow-x:auto;width:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad);padding-bottom:14px;scrollbar-width:none}
-  .track::-webkit-scrollbar{display:none}
-  .cc,.cc.big{width:min(82vw,420px);scroll-snap-align:start}
-  .hs-pin{min-height:0;padding-block:0}
-  .hs-bar{display:none}
-}
+@media (max-width:699px){.track{grid-template-columns:minmax(0,1fr)}}
 
 /* 06 what we fix: the problem is struck out, the fix is written in */
 .fixes{list-style:none;margin:0;padding:0;display:grid;counter-reset:f}
