@@ -31,6 +31,7 @@ function init(a){
     gsap.ticker.lagSmoothing(0);
   }
   anchors();
+  stepper();
   progress(); scenes(); offer();
   story(); duel(); films(); portrait(); timeline(); shots(); stats(); mark();
   buildContent();
@@ -126,12 +127,12 @@ function hero(){
 }
 
 /* ---------- 03 the customer journey: four beats, snapped, short ---------- */
+let storyST = null, duelST = null;
 function story(){
   api.setStory(0);
-  ScrollTrigger.create({
+  storyST = ScrollTrigger.create({
     trigger: "#story", start: "top top", end: () => "+=" + Math.round(innerHeight * 1.5),
     pin: true, invalidateOnRefresh: true,
-    snap: { snapTo: [0, 1 / 3, 2 / 3, 1], duration: { min: .25, max: .55 }, delay: .06, ease: "power2.inOut" },
     onUpdate: s => api.setStory(s.progress),
     onRefresh: s => api.setStory(s.progress),
     onEnter: () => api.flowLayout()
@@ -142,10 +143,102 @@ function story(){
 function duel(){
   const o = { p: 0 };
   api.setDuel(0);
-  gsap.to(o, {
+  duelST = gsap.to(o, {
     p: 1, ease: "none", onUpdate: () => api.setDuel(o.p),
     scrollTrigger: { trigger: "#diff", start: "top top", end: () => "+=" + Math.round(innerHeight * 1.1), pin: true, scrub: .5, invalidateOnRefresh: true }
-  });
+  }).scrollTrigger;
+}
+
+/* ---------- one scroll = one scene ----------
+   Inside the pinned scenes the page moves stop to stop: a single wheel notch, swipe or arrow key goes to the
+   next stop, and a fast flick goes to the next stop too (the rest of its momentum is swallowed).
+   Stops: hero (play button, film lit in the frame, full film + line), manifesto (start, end),
+   journey (four beats), ads-vs-story chart (start, end). Between scenes the page scrolls normally. */
+function stepper(){
+  const zones = () => {
+    const z = [], at = (st, ks) => ks.map(k => st.start + (st.end - st.start) * k);
+    const h = content[0] && content[0].scrollTrigger, m = content[1] && content[1].scrollTrigger;
+    if (h) z.push(at(h, [0, .7, 1]));
+    if (m) z.push(at(m, [0, 1]));
+    if (storyST) z.push(at(storyST, [0, 1 / 3, 2 / 3, 1]));
+    if (duelST) z.push(at(duelST, [0, 1]));
+    return z.map(s => s.map(Math.round));
+  };
+  let busy = false, quietT = 0, endT = 0;
+  const locked = () => !!document.querySelector("dialog[open]") || (lenis && lenis.isStopped && !busy);
+  const y = () => lenis ? lenis.animatedScroll : scrollY;
+  const goal = () => lenis ? lenis.targetScroll : scrollY;
+  /* after a step, ignore input until it has been quiet for a moment, so trackpad and flick momentum can't stack steps */
+  let moving = false;
+  const settle = () => { clearTimeout(quietT); quietT = setTimeout(() => { if (!moving) busy = false; }, 220); };
+  function go(to){
+    busy = moving = true; clearTimeout(quietT); clearTimeout(endT);
+    const done = () => { moving = false; settle(); };
+    if (lenis) lenis.scrollTo(to, { duration: 1.05, easing: x => 1 - Math.pow(1 - x, 3), force: true, onComplete: done });
+    else { scrollTo({ top: to, behavior: "smooth" }); endT = setTimeout(done, 900); }
+  }
+  /* where should a move in direction `dir` land? null = leave it to normal scrolling */
+  function target(dir, projected){
+    const cur = y(), z = zones();
+    for (const s of z) {
+      const a = s[0], b = s[s.length - 1];
+      if (cur >= a - 2 && cur <= b + 2) {
+        const nxt = dir > 0 ? s.find(v => v > cur + 2) : [...s].reverse().find(v => v < cur - 2);
+        if (nxt != null) return nxt;
+      }
+    }
+    /* outside a scene (or leaving one): if the next scene is about a screen away, one notch goes straight to it;
+       a fast move must stop at the start (or end, going up) of the next scene, not fly through it */
+    const reach = innerHeight * 1.3;
+    projected = dir > 0 ? Math.max(projected, cur + reach) : Math.min(projected, cur - reach);
+    for (const s of (dir > 0 ? z : [...z].reverse())) {
+      const a = s[0], b = s[s.length - 1];
+      if (dir > 0 && cur < a && projected >= a) return a;
+      if (dir < 0 && cur > b && projected <= b) return b;
+    }
+    return null;
+  }
+  addEventListener("wheel", e => {
+    if (e.ctrlKey || locked()) return;
+    const dir = Math.sign(e.deltaY); if (!dir) return;
+    if (busy) { e.preventDefault(); e.stopImmediatePropagation(); settle(); return; }
+    const t = target(dir, goal() + e.deltaY * 1.2);
+    if (t == null) return;
+    e.preventDefault(); e.stopImmediatePropagation(); go(t);
+  }, { capture: true, passive: false });
+  addEventListener("keydown", e => {
+    if (locked() || (e.target.closest && e.target.closest("input,textarea,select,button,[contenteditable]"))) return;
+    const dir = ["ArrowDown", "PageDown", " "].includes(e.key) ? (e.shiftKey && e.key === " " ? -1 : 1) : ["ArrowUp", "PageUp"].includes(e.key) ? -1 : 0;
+    if (!dir) return;
+    if (busy) { e.preventDefault(); return; }
+    const t = target(dir, goal() + dir * innerHeight * .9);
+    if (t == null) return;
+    e.preventDefault(); go(t);
+  }, { capture: true });
+  /* touch: a swipe inside a scene is one step */
+  let ty = null;
+  addEventListener("touchstart", e => { ty = e.touches[0].clientY; }, { passive: true });
+  addEventListener("touchmove", e => { if (ty == null) return; const dir = Math.sign(ty - e.touches[0].clientY); if (busy || (dir && target(dir, y()) != null && inside())) e.preventDefault(); }, { passive: false });
+  addEventListener("touchend", e => {
+    if (ty == null) return; const dy = ty - e.changedTouches[0].clientY; ty = null;
+    if (busy || Math.abs(dy) < 24) return;
+    const t = target(Math.sign(dy), y() + dy * 3); if (t != null) go(t);
+  }, { passive: true });
+  const inside = () => { const cur = y(); return zones().some(s => cur >= s[0] - 2 && cur <= s[s.length - 1] + 2); };
+  /* if a scroll ever comes to rest between two stops inside a scene, finish it to the nearest one */
+  let restT = 0;
+  addEventListener("scroll", () => {
+    clearTimeout(restT);
+    restT = setTimeout(() => {
+      if (busy) return;
+      const cur = y();
+      for (const s of zones()) {
+        if (cur > s[0] + 2 && cur < s[s.length - 1] - 2 && !s.some(v => Math.abs(v - cur) <= 2)) {
+          go(s.reduce((p, v) => Math.abs(v - cur) < Math.abs(p - cur) ? v : p, s[0])); return;
+        }
+      }
+    }, 160);
+  }, { passive: true });
 }
 
 /* ---------- 05 films: vertical scroll drives a horizontal reel (wide screens) ---------- */
