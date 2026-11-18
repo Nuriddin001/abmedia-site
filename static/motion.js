@@ -131,7 +131,7 @@ let storyST = null, duelST = null;
 function story(){
   api.setStory(0);
   storyST = ScrollTrigger.create({
-    trigger: "#story", start: "top top", end: () => "+=" + Math.round(innerHeight * 1.5),
+    trigger: "#story", start: "top top", end: () => "+=" + Math.round(innerHeight * .8),
     pin: true, invalidateOnRefresh: true,
     onUpdate: s => api.setStory(s.progress),
     onRefresh: s => api.setStory(s.progress),
@@ -173,9 +173,12 @@ function stepper(){
   const settle = () => { clearTimeout(quietT); quietT = setTimeout(() => { if (!moving) busy = false; }, 220); };
   function go(to){
     busy = moving = true; clearTimeout(quietT); clearTimeout(endT);
-    const done = () => { moving = false; settle(); };
+    let fin = false;
+    const done = () => { if (fin) return; fin = true; clearTimeout(endT); moving = false; settle(); };
     if (lenis) lenis.scrollTo(to, { duration: 1.05, easing: x => 1 - Math.pow(1 - x, 3), force: true, onComplete: done });
-    else { scrollTo({ top: to, behavior: "smooth" }); endT = setTimeout(done, 900); }
+    else scrollTo({ top: to, behavior: "smooth" });
+    /* a step must never lock the page: if its glide is interrupted (a touchpad, a click on a link), release anyway */
+    endT = setTimeout(done, 1400);
   }
   /* where should a move in direction `dir` land? null = leave it to normal scrolling */
   function target(dir, projected){
@@ -198,8 +201,14 @@ function stepper(){
     }
     return null;
   }
+  /* a touchpad sends a stream of small deltas (and sideways ones); holding it back would make the page feel stuck,
+     so touchpad scrolling stays smooth and free, and a scene snaps to its nearest step when the scroll rests */
+  let padT = -1e9;
+  const pad = () => performance.now() - padT < 900;
   addEventListener("wheel", e => {
     if (e.ctrlKey || locked()) return;
+    if (e.deltaMode === 0 && (Math.abs(e.deltaY) < 40 || e.deltaX !== 0)) padT = performance.now();
+    if (pad()) return;
     const dir = Math.sign(e.deltaY); if (!dir) return;
     if (busy) { e.preventDefault(); e.stopImmediatePropagation(); settle(); return; }
     const t = target(dir, goal() + e.deltaY * 1.2);
@@ -227,7 +236,10 @@ function stepper(){
       const cur = y();
       for (const s of zones()) {
         if (cur > s[0] + 2 && cur < s[s.length - 1] - 2 && !s.some(v => Math.abs(v - cur) <= 2)) {
-          go(s.reduce((p, v) => Math.abs(v - cur) < Math.abs(p - cur) ? v : p, s[0])); return;
+          const to = s.reduce((p, v) => Math.abs(v - cur) < Math.abs(p - cur) ? v : p, s[0]);
+          /* after a touchpad scroll: a soft glide that the next swipe simply takes over, never a lock */
+          if (performance.now() - padT < 3000 && lenis) lenis.scrollTo(to, { duration: .7, easing: x => 1 - Math.pow(1 - x, 3) }); else go(to);
+          return;
         }
       }
     }, 160);
