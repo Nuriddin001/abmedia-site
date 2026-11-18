@@ -19,6 +19,10 @@ const coarse = matchMedia("(pointer: coarse)").matches;
    and the planner, so the photos are not stuck behind 14 MB downloads; the viewing room always plays the full film */
 const LITE = coarse || matchMedia("(max-width: 760px)").matches;
 const vsrc = name => "/media/" + (LITE ? "m/" : "") + name + ".mp4";
+/* on phones the films wait until the page and its photos have arrived: on a slow connection the text and the photos come first */
+const afterLoad = fn => { if (document.readyState === "complete") setTimeout(fn, 600); else addEventListener("load", () => setTimeout(fn, 600), { once: true }); };
+let pageReady = !LITE;
+if (LITE) afterLoad(() => { pageReady = true; if (reel.i >= 0) show(reel.i); monSync(); });
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const NS = "http://www.w3.org/2000/svg";
 function icon(id, cls){ const s = document.createElementNS(NS, "svg"); s.setAttribute("class", "ic" + (cls ? " " + cls : "")); s.setAttribute("aria-hidden", "true"); const u = document.createElementNS(NS, "use"); u.setAttribute("href", "#i-" + id); s.append(u); return s; }
@@ -203,11 +207,13 @@ function initReel(){
   const media = $("#reel-media"), segs = $("#segs");
   root.style.setProperty("--shot", SHOT + "ms");
   reel.shots.forEach((ci, k) => {
-    const v = el("video"); v.muted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "none"; v.poster = "/media/" + CASES[ci].video + ".jpg";
+    const v = el("video"); v.muted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "none";
+    /* phones only ever show the first film here, so only its cover is fetched */
+    if (!LITE || k === 0) v.poster = "/media/" + CASES[ci].video + ".jpg";
     v.addEventListener("loadedmetadata", () => { if (v.dataset.seeked) return; v.dataset.seeked = "1"; try { v.currentTime = v.duration * START[k]; } catch (e) {} });
     media.append(v); reel.vids.push(v); segs.append(el("i"));
   });
-  reel.load = k => { const v = reel.vids[k]; if (!v.src) { v.src = vsrc(CASES[reel.shots[k]].video); v.preload = "auto"; v.load(); } };
+  reel.load = k => { const v = reel.vids[k]; if (!pageReady) return; if (!v.src) { v.src = vsrc(CASES[reel.shots[k]].video); v.preload = "auto"; v.load(); } };
   show(0);
   new IntersectionObserver(es => { reel.on = es[0].isIntersecting; sync(); }).observe($("#reel"));
   document.addEventListener("visibilitychange", sync);
@@ -461,9 +467,9 @@ function renderResult(){
   let mon = box.querySelector(".mon");
   if (!mon || changedCase) {
     mon = el("button", "mon"); mon.type = "button"; mon.dataset.cursor = "play";
-    const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.poster = "/media/" + cs.video + ".jpg";
-    /* the film loads only once the planner is on screen (see runDesk), so it never competes with the photos above */
-    if (!reduce) { v.preload = "none"; v.dataset.src = vsrc(cs.video) + "#t=6"; }
+    const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.dataset.poster = "/media/" + cs.video + ".jpg";
+    /* the film (and its cover) load only once the planner is near the screen (see runDesk), so they never compete with the photos above */
+    if (!reduce) { v.preload = "none"; v.dataset.src = vsrc(cs.video) + "#t=6"; } else v.poster = v.dataset.poster;
     mon.append(v, el("span", "mon-rec"), el("span", "mon-l3"), el("span", "mon-tc"));
     mon.addEventListener("click", () => openRoom(desk.lastCase));
   }
@@ -493,7 +499,8 @@ function renderResult(){
 }
 function monSync(){
   const v = $("#bres .mon video"); if (!v || reduce) return;
-  if (desk.on) { if (!v.src && v.dataset.src) { v.src = v.dataset.src; v.preload = "auto"; } const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+  if (desk.on && !v.poster) v.poster = v.dataset.poster;
+  if (desk.on && pageReady) { if (!v.src && v.dataset.src) { v.src = v.dataset.src; v.preload = "auto"; } const p = v.play(); if (p && p.catch) p.catch(() => {}); }
   else if (v.src) v.pause();
 }
 /* the playhead sweeps the track every 6 s and lights the clip under it */
@@ -610,7 +617,8 @@ function renderCases(){
     const card = el("article", "cc" + (big ? " big" : "") + (k >= SHOWN ? " extra" : ""));
     const media = el("button", "cc-media"); media.type = "button"; media.dataset.cursor = "play"; media.dataset.video = c.video;
     media.setAttribute("aria-label", t.open_case + ": " + c.client);
-    const im = el("img"); im.src = "/media/" + c.video + ".jpg"; im.alt = ""; im.loading = "lazy";
+    /* "lazy" must be set before the address, or the photo downloads at once even far down the page */
+    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.src = "/media/" + c.video + ".jpg"; im.alt = "";
     const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "none";
     media.append(im, v, el("span", "cc-n", String(k + 1).padStart(2, "0")), el("span", "tc", c.dur + (c.bts ? " + " + c.bts.dur : "")));
     media.addEventListener("click", () => openRoom(i));
@@ -662,7 +670,7 @@ function renderShots(t){
   box.querySelectorAll(".shot").forEach(n => n.remove());
   t.nx.forEach((title, i) => {
     const s = SHOTS[i], f = el("figure", "shot" + (i < lit ? " lit" : ""));
-    const im = el("img"); im.src = s.img; im.alt = i < 2 ? t.name : ""; im.loading = "lazy"; im.style.objectPosition = s.pos; im.style.setProperty("--z", s.zoom);
+    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.src = s.img; im.alt = i < 2 ? t.name : ""; im.style.objectPosition = s.pos; im.style.setProperty("--z", s.zoom);
     const hud = el("span", "shot-hud"); hud.append(el("i"), document.createTextNode(s.hud));
     const fx = el("span", "shot-fx " + s.kind, null);
     if (s.kind === "wave") for (let k = 0; k < 18; k++) { const b = el("i"); b.style.setProperty("--k", k); fx.append(b); }
