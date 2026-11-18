@@ -437,7 +437,7 @@ function recommend(){
   else { fmtI = 1; stages = ["aud", "pos", "story", "cont", "gtm"]; }
   if (dist === "yes") { stages = stages.concat("run"); if (fmtI === 1) fmtI = 2; }
   const pick = have === "agency"
-    ? { launch: "IMZO", trust: "Grand Capital", explain: "Uztelecom", social: "ZO'R TV" }[goal]
+    ? { launch: "IMZO", trust: "Grand Capital", explain: "Sales Doctor Academy", social: "ZO'R TV" }[goal]
     : { launch: "Good Day Cappuccino", trust: "To'xtaniyoz Ota", explain: "Sales Doctor Academy", social: "ZO'R TV" }[goal];
   return { fmt: fmtI, stages, ci: byClient(pick) };
 }
@@ -589,32 +589,37 @@ $("#room-x").addEventListener("click", closeRoom);
 room.addEventListener("click", e => { if (e.target === room) closeRoom(); });
 room.addEventListener("close", () => { rv.pause(); rv.removeAttribute("src"); rv.load(); openIdx = -1; if (M()) M().pause(false); });
 
-/* ---------- 05 films: two on show, the rest behind "More films" ---------- */
-const ORDER = FEAT.map(byClient).concat(CASES.map((_, i) => i).filter(i => !FEAT.includes(CASES[i].client)));
-const SHOWN = 2;
-let filmsOpen = false;
-function setFilmsLabel(){
-  const t = T(), btn = $("#more-btn");
-  $("#more-lbl").textContent = filmsOpen ? t.cs_less : t.cs_more;
-  $("#more-n").textContent = filmsOpen ? "" : "+" + (ORDER.length - SHOWN);
-  btn.setAttribute("aria-expanded", String(filmsOpen));
-  btn.classList.toggle("open", filmsOpen);
+/* ---------- 05 films: two on show, the rest in a folder ---------- */
+const ORDER = FEAT.map(byClient).filter(i => i >= 0);
+const REST = CASES.map((_, i) => i).filter(i => !ORDER.includes(i));
+/* the other films sit in a folder; hovering it (tapping on a phone) fans them up one by one like cards */
+const folder = $("#folder");
+const folderOpen = () => folder.classList.contains("open") || folder.matches(":hover");
+function setFolder(on){ folder.classList.toggle("open", on); $("#fd-front").setAttribute("aria-expanded", String(on)); }
+$("#fd-front").addEventListener("click", () => setFolder(!folder.classList.contains("open")));
+document.addEventListener("click", e => { if (!folder.contains(e.target)) setFolder(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") setFolder(false); });
+function renderFolder(){
+  const t = T(), box = $("#fd-cards"), n = REST.length; box.replaceChildren();
+  REST.forEach((i, k) => {
+    const c = CASES[i], b = el("button", "fd-card"); b.type = "button"; b.dataset.cursor = "play";
+    b.style.setProperty("--k", k); b.style.setProperty("--o", (k - (n - 1) / 2).toFixed(2));
+    b.setAttribute("aria-label", t.open_case + ": " + c.client);
+    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.src = "media/" + c.video + ".jpg"; im.alt = "";
+    const cap = el("span", "fd-cap"); cap.append(el("b", null, c.client), el("i", null, c.dur));
+    b.append(im, cap);
+    /* a closed folder opens on the first tap; a card in an open folder plays its film */
+    b.addEventListener("click", e => { e.stopPropagation(); if (!folderOpen()) return setFolder(true); openRoom(i); });
+    box.append(b);
+  });
+  folder.style.setProperty("--n", n);
+  $("#fd-n").textContent = "+" + n; $("#fd-t").textContent = t.cs_more;
 }
-function toggleFilms(){
-  filmsOpen = !filmsOpen;
-  $("#track").classList.toggle("open", filmsOpen);
-  setFilmsLabel();
-  const extra = $$("#track .cc.extra");
-  if (filmsOpen && window.gsap && !reduce) gsap.fromTo(extra, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .6, ease: "power3.out", stagger: .07, clearProps: "opacity,transform" });
-  if (!filmsOpen) { extra.forEach(c => preview(c.querySelector(".cc-media"), false)); if (M()) M().scrollTo("#cases"); }
-  requestAnimationFrame(() => { if (M()) M().settle(); });
-}
-$("#more-btn").addEventListener("click", toggleFilms);
 function renderCases(){
   const t = T(), track = $("#track"); track.replaceChildren();
   ORDER.forEach((i, k) => {
     const c = CASES[i], big = FEAT.includes(c.client), m = metric(c.client);
-    const card = el("article", "cc" + (big ? " big" : "") + (k >= SHOWN ? " extra" : ""));
+    const card = el("article", "cc" + (big ? " big" : ""));
     const media = el("button", "cc-media"); media.type = "button"; media.dataset.cursor = "play"; media.dataset.video = c.video;
     media.setAttribute("aria-label", t.open_case + ": " + c.client);
     /* "lazy" must be set before the address, or the photo downloads at once even far down the page */
@@ -629,8 +634,7 @@ function renderCases(){
     if (big && m.result) card.append(el("p", "res", tr(m.result)));
     track.append(card);
   });
-  setFilmsLabel();
-  $("#more").textContent = fill(t.more, DATA.more);
+  renderFolder();
   const run = $("#run"); run.replaceChildren();
   for (let r = 0; r < 2; r++) CASES.forEach(c => run.append(el("span", null, c.client)));
   $("#run-sr").textContent = CASES.map(c => c.client).join(", ");
@@ -722,8 +726,6 @@ function render(){
   if (reel.i >= 0) reelTag();
   renderManifest();
 
-  const st = $("#stats"); st.replaceChildren();
-  [DATA.projects, DATA.years, DATA.total_views, DATA.per_month].forEach((v, i) => { const d = el("div", "stat"); const b = el("b", null, String(v)); b.dataset.n = String(v); d.append(b, el("span", null, t.stat_l[i])); st.append(d); });
 
   renderStory();
   renderJourney();
@@ -738,7 +740,6 @@ function render(){
   renderBuilder();
 
   renderShots(t);
-  $("#slots").textContent = fill(t.slots, DATA.slots);
   renderSlate();
   renderBrief();
   $$(".err[data-k], #send-err[data-k]").forEach(n => { if (!n.hidden) n.textContent = t[n.dataset.k]; });
@@ -750,6 +751,7 @@ function render(){
   const ct = $("#contacts"); ct.replaceChildren();
   const cv = DATA.contacts;
   [cv.phone, cv.telegram, cv.instagram, cv.email].forEach((v, i) => {
+    if (!v) return;  /* only contacts that really exist */
     const d = el("a", "ct"); d.href = contactHref(i, v); if (i === 1 || i === 2) { d.target = "_blank"; d.rel = "noopener"; }
     d.append(el("span", null, t.ct[i]), el("b", null, v)); ct.append(d);
   });

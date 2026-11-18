@@ -33,7 +33,7 @@ function init(a){
   anchors();
   stepper();
   progress(); scenes(); offer();
-  story(); duel(); portrait(); timeline(); shots(); stats(); mark();
+  story(); duel(); portrait(); timeline(); shots(); mark();
   buildContent();
   ScrollTrigger.addEventListener("refresh", () => api.flowLayout());
   built = true;
