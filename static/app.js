@@ -14,6 +14,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
+const coarse = matchMedia("(pointer: coarse)").matches;
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const NS = "http://www.w3.org/2000/svg";
 function icon(id, cls){ const s = document.createElementNS(NS, "svg"); s.setAttribute("class", "ic" + (cls ? " " + cls : "")); s.setAttribute("aria-hidden", "true"); const u = document.createElementNS(NS, "use"); u.setAttribute("href", "#i-" + id); s.append(u); return s; }
@@ -71,15 +72,19 @@ function initStars(){
         px: 0, py: 0, fx: 0, fy: 0, fs: 1, ox: 0, oy: 0, glow: 0 });
     }
   }
+  let lw = 0, lh = 0;
   function layout(){
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    /* phones resize the page whenever the address bar slides; a height change that small is not worth a rebuild */
+    if (coarse && ps.length && host.clientWidth === lw && Math.abs(host.clientHeight - lh) < 160) return;
+    lw = host.clientWidth; lh = host.clientHeight;
+    const dpr = Math.min(devicePixelRatio || 1, coarse ? 1.5 : 2);
     W = host.clientWidth; H = host.clientHeight; cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const narrow = W < 760 || W < H;
     /* on tall layouts the ring sits between AB and MEDIA, so it may only use the height they leave free */
     cx = W / 2; cy = H / 2; R = narrow ? Math.max(60, Math.min(W * .36, H * .2, (H - 420) / 2)) : Math.max(60, Math.min(W * .15, H * .32, H / 2 - 150));
     /* the gap the two halves of the mark leave for the play button */
     root.style.setProperty("--hole", (narrow ? R * 2 + 40 : R * 2 + W * .05).toFixed(0) + "px");
-    const n = narrow ? 900 : 1700; if (ps.length !== n) build(n);
+    const n = coarse ? 520 : narrow ? 900 : 1700; if (ps.length !== n) build(n);
     /* play button: a ring of light and a triangle (edge + fill), optically centred a little to the right */
     const A = [cx - R * .34, cy - R * .5], B = [cx - R * .34, cy + R * .5], C = [cx + R * .52, cy];
     TRI = [A, B, C];
@@ -209,10 +214,11 @@ function show(k){
   const v = reel.vids[k];
   if (!reduce) { reel.load(k); const p = v.play(); if (p && p.catch) p.catch(() => {}); }
   reel.vids.forEach((x, j) => { x.classList.toggle("on", j === k); if (j !== k) setTimeout(() => { if (reel.i !== j) x.pause(); }, 950); });
-  $$("#segs i").forEach((s, j) => { s.className = j < k ? "done" : j === k && !reduce ? "on" : ""; });
+  $$("#segs i").forEach((s, j) => { s.className = j < k ? "done" : j === k && !reduce && !coarse ? "on" : ""; });
   reelTag();
   clearTimeout(reel.timer); clearTimeout(reel.prep);
-  if (reduce) return;
+  /* phones keep one film: loading and switching a 14 MB video every few seconds stalls a phone */
+  if (reduce || coarse) return;
   reel.prep = setTimeout(() => reel.load((k + 1) % reel.vids.length), SHOT - 2200);
   reel.timer = setTimeout(() => show((k + 1) % reel.vids.length), SHOT);
 }

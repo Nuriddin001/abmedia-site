@@ -215,22 +215,15 @@ function stepper(){
     if (t == null) return;
     e.preventDefault(); go(t);
   }, { capture: true });
-  /* touch: a swipe inside a scene is one step */
-  let ty = null;
-  addEventListener("touchstart", e => { ty = e.touches[0].clientY; }, { passive: true });
-  addEventListener("touchmove", e => { if (ty == null) return; const dir = Math.sign(ty - e.touches[0].clientY); if (busy || (dir && target(dir, y()) != null && inside())) e.preventDefault(); }, { passive: false });
-  addEventListener("touchend", e => {
-    if (ty == null) return; const dy = ty - e.changedTouches[0].clientY; ty = null;
-    if (busy || Math.abs(dy) < 24) return;
-    const t = target(Math.sign(dy), y() + dy * 3); if (t != null) go(t);
-  }, { passive: true });
-  const inside = () => { const cur = y(); return zones().some(s => cur >= s[0] - 2 && cur <= s[s.length - 1] + 2); };
-  /* if a scroll ever comes to rest between two stops inside a scene, finish it to the nearest one */
+  /* phones and tablets scroll natively: touches are never intercepted and a touch scroll is never snapped,
+     so the page can't lock up or fight the finger's momentum */
+  if (matchMedia("(pointer: coarse)").matches) return;
+  /* if a wheel scroll ever comes to rest between two stops inside a scene, finish it to the nearest one */
   let restT = 0;
   addEventListener("scroll", () => {
     clearTimeout(restT);
     restT = setTimeout(() => {
-      if (busy) return;
+      if (busy || (lenis && lenis.isStopped)) return;
       const cur = y();
       for (const s of zones()) {
         if (cur > s[0] + 2 && cur < s[s.length - 1] - 2 && !s.some(v => Math.abs(v - cur) <= 2)) {
