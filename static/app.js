@@ -589,51 +589,32 @@ $("#room-x").addEventListener("click", closeRoom);
 room.addEventListener("click", e => { if (e.target === room) closeRoom(); });
 room.addEventListener("close", () => { rv.pause(); rv.removeAttribute("src"); rv.load(); openIdx = -1; if (M()) M().pause(false); });
 
-/* ---------- 05 films: two on show, the rest in a folder ---------- */
-const ORDER = FEAT.map(byClient).filter(i => i >= 0);
-const REST = CASES.map((_, i) => i).filter(i => !ORDER.includes(i));
-/* the other films sit in a transparent folder; a click slides them up a little, then you pick one */
-const folder = $("#folder");
-function setFolder(on){
-  folder.classList.toggle("open", on); $("#fd-front").setAttribute("aria-expanded", String(on));
-  $$("#fd-cards .fd-card").forEach(c => { c.tabIndex = on ? 0 : -1; });
+/* ---------- 05 films: two on show, the rest behind "More films" ---------- */
+const ORDER = FEAT.map(byClient).filter(i => i >= 0).concat(CASES.map((_, i) => i).filter(i => !FEAT.includes(CASES[i].client)));
+const SHOWN = 2;
+let filmsOpen = false;
+function setFilmsLabel(){
+  const t = T(), btn = $("#more-btn");
+  $("#more-lbl").textContent = filmsOpen ? t.cs_less : t.cs_more;
+  $("#more-n").textContent = filmsOpen ? "" : "+" + (ORDER.length - SHOWN);
+  btn.setAttribute("aria-expanded", String(filmsOpen));
+  btn.classList.toggle("open", filmsOpen);
 }
-/* a click anywhere on the folder opens or closes it; a click on a raised film plays it */
-folder.addEventListener("click", e => { if (!e.target.closest(".fd-card")) setFolder(!folder.classList.contains("open")); });
-/* clicks inside the film viewer keep the folder open, so the next film can be picked */
-document.addEventListener("click", e => { if (!folder.contains(e.target) && !e.target.closest("dialog")) setFolder(false); });
-document.addEventListener("keydown", e => { if (e.key === "Escape") setFolder(false); });
-/* the films stand side by side inside the folder (overlapping a little on narrow screens) */
-function layoutFolder(){
-  const cards = $$("#fd-cards .fd-card"), n = cards.length, W = folder.clientWidth; if (!n || !W) return;
-  const narrow = W < 560, cw = narrow ? W * .34 : Math.min(W * .185, 168);
-  const step = narrow ? (W - cw - 16) / Math.max(1, n - 1) : cw + Math.min(14, W * .02);
-  const ch = cw * .625, x0 = (W - ((n - 1) * step + cw)) / 2;
-  folder.style.setProperty("--ch", ch.toFixed(1) + "px"); folder.style.height = Math.round(ch * 1.75 + 64) + "px";
-  cards.forEach((c, k) => { c.style.left = (x0 + k * step).toFixed(1) + "px"; c.style.width = cw.toFixed(1) + "px"; c.style.height = ch.toFixed(1) + "px"; });
+function toggleFilms(){
+  filmsOpen = !filmsOpen;
+  $("#track").classList.toggle("open", filmsOpen);
+  setFilmsLabel();
+  const extra = $$("#track .cc.extra");
+  if (filmsOpen && window.gsap && !reduce) gsap.fromTo(extra, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .6, ease: "power3.out", stagger: .07, clearProps: "opacity,transform" });
+  if (!filmsOpen) { extra.forEach(c => preview(c.querySelector(".cc-media"), false)); if (M()) M().scrollTo("#cases"); }
+  requestAnimationFrame(() => { if (M()) M().settle(); });
 }
-addEventListener("resize", layoutFolder);
-function renderFolder(){
-  const t = T(), box = $("#fd-cards"), n = REST.length; box.replaceChildren();
-  REST.forEach((i, k) => {
-    const c = CASES[i], b = el("button", "fd-card"); b.type = "button"; b.dataset.cursor = "play";
-    b.style.setProperty("--k", k);
-    b.setAttribute("aria-label", t.open_case + ": " + c.client);
-    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.src = "media/" + c.video + ".jpg"; im.alt = "";
-    const cap = el("span", "fd-cap"); cap.append(el("b", null, c.client), el("i", null, c.dur));
-    b.append(im, cap);
-    b.addEventListener("click", () => { if (folder.classList.contains("open")) openRoom(i); });
-    box.append(b);
-  });
-  folder.style.setProperty("--n", n);
-  $("#fd-n").textContent = "+" + n; $("#fd-t").textContent = t.cs_more;
-  layoutFolder(); setFolder(folder.classList.contains("open"));
-}
+$("#more-btn").addEventListener("click", toggleFilms);
 function renderCases(){
   const t = T(), track = $("#track"); track.replaceChildren();
   ORDER.forEach((i, k) => {
     const c = CASES[i], big = FEAT.includes(c.client), m = metric(c.client);
-    const card = el("article", "cc" + (big ? " big" : ""));
+    const card = el("article", "cc" + (big ? " big" : "") + (k >= SHOWN ? " extra" : ""));
     const media = el("button", "cc-media"); media.type = "button"; media.dataset.cursor = "play"; media.dataset.video = c.video;
     media.setAttribute("aria-label", t.open_case + ": " + c.client);
     /* "lazy" must be set before the address, or the photo downloads at once even far down the page */
@@ -648,7 +629,7 @@ function renderCases(){
     if (big && m.result) card.append(el("p", "res", tr(m.result)));
     track.append(card);
   });
-  renderFolder();
+  setFilmsLabel();
   const run = $("#run"); run.replaceChildren();
   for (let r = 0; r < 2; r++) CASES.forEach(c => run.append(el("span", null, c.client)));
   $("#run-sr").textContent = CASES.map(c => c.client).join(", ");
