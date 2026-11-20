@@ -117,7 +117,9 @@ function hero(){
     /* light becomes an image: the film lights up inside the frame of stars, then fills the screen */
     .fromTo("#reel", { opacity: 0, clipPath: api.frameClip }, { opacity: 1, ease: "none", duration: .1 }, .6)
     .to("#reel-media", { scale: 1, ease: "none", duration: .3 }, .6)
-    .to("#reel", { clipPath: "inset(0px 0px 0px 0px round 0px)", ease: "power2.inOut", duration: .2 }, .7)
+    /* the frame grows evenly from the centre: the start shape is given in full (top right bottom left + radius),
+       because the browser shortens the live value and the numbers would pair up wrong, opening it from the left */
+    .fromTo("#reel", { clipPath: api.frameClip }, { clipPath: "inset(0px 0px 0px 0px round 0px)", ease: "power2.inOut", duration: .2, immediateRender: false }, .7)
     .to([".vf", ".reel-shade"], { opacity: 1, ease: "none", duration: .06 }, .86)
     .to([".reel-tag", ".segs"], { opacity: 1, ease: "none", duration: .06 }, .88)
     .set(".line", { opacity: 1 }, .84)
