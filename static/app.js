@@ -537,7 +537,7 @@ function renderProcess(){
   $$("#modes button").forEach(b => { const m = +b.dataset.m; b.textContent = t.modes[m]; b.setAttribute("aria-pressed", String(m === mode)); });
   $("#mode-d").textContent = t.mode_d[mode];
   /* with your team: they make the content, AB Media leads the rest */
-  const kinds = mode === 0 ? ["full", "full", "full", "full", "full", "full"] : ["full", "full", "full", "you", "sup", "sup"];
+  const kinds = mode === 0 ? ["full", "full", "full", "full", "full", "full"] : ["full", "full", "full", "with", "sup", "sup"];
   const ol = $("#steps"), on = $$("#steps .step.on").length;
   ol.replaceChildren();
   t.steps.forEach(([h, p], i) => {
