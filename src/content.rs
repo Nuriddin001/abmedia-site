@@ -89,7 +89,10 @@ pub fn site() -> SiteData {
                 ru: Some("https://t.me/abror_bakhtiyarovich_russia"),
                 ar: Some("https://t.me/abror_bakhtiyarovich_arabia"),
             },
-            instagram: PerLang::default(),
+            instagram: PerLang {
+                en: Some("https://www.instagram.com/abror_bakhtiyarovich_usa/"),
+                ..Default::default()
+            },
             youtube: None,
             email: None,
         },
