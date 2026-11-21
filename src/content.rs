@@ -95,7 +95,7 @@ pub fn site() -> SiteData {
                 ru: Some("https://www.instagram.com/abror_bakhtiyarovich_russia/"),
                 ar: Some("https://www.instagram.com/abror_bakhtiyarovich_arabia/"),
             },
-            youtube: None,
+            youtube: Some("https://www.youtube.com/@abrorbaxtiyarovich"),
             email: None,
         },
         // The two films shown first in Work (and in the opening montage)

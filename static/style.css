@@ -584,6 +584,8 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .ct b{font-weight:700;overflow-wrap:anywhere;direction:ltr;justify-self:start}
 .legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding-top:20px;border-top:1px solid var(--edge);color:var(--mist);font-size:.88rem}
 @media (max-width:760px){.contacts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* narrow phones: one contact per row, so long channel names stay on one line */
+@media (max-width:480px){.contacts{grid-template-columns:minmax(0,1fr)}}
 
 /* viewing room */
 dialog.room{width:min(1080px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:0;border:1px solid var(--edge);border-radius:22px;background:var(--night-2);color:var(--snow);overflow:auto}
