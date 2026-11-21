@@ -15,12 +15,23 @@ pub struct Tr {
     pub ar: &'static str,
 }
 
+/// A link that differs per page language. `None` = not shown in that language.
+#[derive(Serialize, Default)]
+pub struct PerLang {
+    pub en: Option<&'static str>,
+    pub es: Option<&'static str>,
+    pub ru: Option<&'static str>,
+    pub ar: Option<&'static str>,
+}
+
 /// Contacts shown in the footer. `None` = not shown.
+/// Telegram and Instagram follow the page language; phone, YouTube and email are the same in every language.
 #[derive(Serialize)]
 pub struct Contacts {
     pub phone: &'static str,
-    pub telegram: Option<&'static str>,
-    pub instagram: Option<&'static str>,
+    pub telegram: PerLang,
+    pub instagram: PerLang,
+    pub youtube: Option<&'static str>,
     pub email: Option<&'static str>,
 }
 
@@ -71,9 +82,15 @@ pub fn site() -> SiteData {
         contacts: Contacts {
             // Real US number (virtual line; its subscription runs to 27 Nov 2026, renew it or replace it)
             phone: "+1 929 652 4542",
-            // Add the real accounts here when they exist, e.g. Some("@abmedia")
-            telegram: None,
-            instagram: None,
+            // Full links. A language left as None shows no link of that kind.
+            telegram: PerLang {
+                en: Some("https://t.me/abror_bakhtiyarovich_usa"),
+                es: Some("https://t.me/abror_bakhtiyarovich_espana"),
+                ru: Some("https://t.me/abror_bakhtiyarovich_russia"),
+                ar: Some("https://t.me/abror_bakhtiyarovich_arabia"),
+            },
+            instagram: PerLang::default(),
+            youtube: None,
             email: None,
         },
         // The two films shown first in Work (and in the opening montage)

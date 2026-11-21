@@ -692,7 +692,20 @@ function clap(hold){
 $("#slate").addEventListener("click", () => clap(false));
 
 /* ---------- contacts & footer ---------- */
-function contactHref(i, v){ const h = String(v).replace(/^@/, ""); return ["tel:" + String(v).replace(/[^\d+]/g, ""), "https://t.me/" + h, "https://instagram.com/" + h, "mailto:" + v][i]; }
+/* contacts: Telegram and Instagram follow the page language, phone / YouTube / email are the same everywhere */
+function contactHref(kind, v){
+  if (kind === "tel") return "tel:" + String(v).replace(/[^\d+]/g, "");
+  if (kind === "mail") return "mailto:" + v;
+  if (/^https?:\/\//.test(v)) return v;
+  const h = String(v).replace(/^@/, "");
+  return { tg: "https://t.me/", ig: "https://instagram.com/", yt: "https://youtube.com/@" }[kind] + h;
+}
+/* a link is shown as its handle: https://t.me/name -> @name */
+function contactText(kind, v){
+  if (kind === "tel" || kind === "mail") return v;
+  const m = /^https?:\/\/(?:www\.)?(?:t\.me|instagram\.com|youtube\.com)\/(?:c\/|channel\/|user\/)?@?([^/?#]+)/.exec(v);
+  return m ? "@" + m[1] : v;
+}
 function renderMark(){
   const fm = $("#fm"); if (fm.querySelector(".ch")) return;
   "AB MEDIA".split("").forEach(ch => fm.append(ch === " " ? el("span", "sp") : el("span", "ch", ch)));
@@ -745,10 +758,12 @@ function render(){
 
   const ct = $("#contacts"); ct.replaceChildren();
   const cv = DATA.contacts;
-  [cv.phone, cv.telegram, cv.instagram, cv.email].forEach((v, i) => {
-    if (!v) return;  /* only contacts that really exist */
-    const d = el("a", "ct"); d.href = contactHref(i, v); if (i === 1 || i === 2) { d.target = "_blank"; d.rel = "noopener"; }
-    d.append(el("span", null, t.ct[i]), el("b", null, v)); ct.append(d);
+  const forLang = o => (o && o[lang]) || null;
+  [["tel", t.ct[0], cv.phone], ["tg", t.ct[1], forLang(cv.telegram)], ["ig", t.ct[2], forLang(cv.instagram)],
+   ["yt", t.ct[4] || "YouTube", cv.youtube], ["mail", t.ct[3], cv.email]].forEach(([kind, label, v]) => {
+    if (!v) return;  /* only contacts that really exist (in this language) */
+    const d = el("a", "ct"); d.href = contactHref(kind, v); if (kind !== "tel" && kind !== "mail") { d.target = "_blank"; d.rel = "noopener"; }
+    d.append(el("span", null, label), el("b", null, contactText(kind, v))); ct.append(d);
   });
   renderMark();
   setScene(scene);

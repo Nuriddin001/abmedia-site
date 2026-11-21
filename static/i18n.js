@@ -271,7 +271,8 @@ const L = {
    "Phone",
    "Telegram",
    "Instagram",
-   "Email"
+   "Email",
+   "YouTube"
   ],
   "cat": {
    "Sales Doctor Academy": "Business education",
@@ -598,7 +599,8 @@ const L = {
    "Teléfono",
    "Telegram",
    "Instagram",
-   "Email"
+   "Email",
+   "YouTube"
   ],
   "cat": {
    "Sales Doctor Academy": "Formación empresarial",
@@ -925,7 +927,8 @@ const L = {
    "Телефон",
    "Telegram",
    "Instagram",
-   "Email"
+   "Email",
+   "YouTube"
   ],
   "cat": {
    "Sales Doctor Academy": "Бизнес-образование",
@@ -1252,7 +1255,8 @@ const L = {
    "الهاتف",
    "تيليغرام",
    "إنستغرام",
-   "البريد"
+   "البريد",
+   "يوتيوب"
   ],
   "cat": {
    "Sales Doctor Academy": "تعليم الأعمال",
