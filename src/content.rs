@@ -92,6 +92,7 @@ pub fn site() -> SiteData {
             instagram: PerLang {
                 en: Some("https://www.instagram.com/abror_bakhtiyarovich_usa/"),
                 es: Some("https://www.instagram.com/abror_bakhtiyarovich_espana/"),
+                ar: Some("https://www.instagram.com/abror_bakhtiyarovich_arabia/"),
                 ..Default::default()
             },
             youtube: None,
