@@ -814,7 +814,11 @@ form.addEventListener("submit", async e => {
   const lead = { name: n.value.trim(), phone: p.value.trim(), email: m.value.trim(), lang, brief, calc, website: $("#f-web").value, utm: utm(), page: location.pathname, referrer: document.referrer.slice(0, 300) };
   const label = btn.querySelector("span"); btn.disabled = true; label.textContent = t.sending;
   const fail = key => { btn.disabled = false; label.textContent = T().f_btn; se.dataset.k = key; se.textContent = T()[key]; se.hidden = false; };
-  /* the static preview (Vercel test link) has no server behind it: show the success state without sending */
+  /* every request goes to the Google Sheet; the Rust server (when there is one) also keeps its own copy */
+  if (DATA.leads_sheet) try {
+    /* no-cors + text/plain: Apps Script takes it without a CORS preflight; the reply is opaque, so only a network error counts as failure */
+    await fetch(DATA.leads_sheet, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(lead) });
+  } catch (err) { if (window.ABM_PREVIEW) return fail("e_send"); }
   if (!window.ABM_PREVIEW) try {
     const res = await fetch("/api/leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(lead) });
     if (res.status === 422) { const j = await res.json().catch(() => ({})); const f = FIELD[j.field]; btn.disabled = false; label.textContent = T().f_btn; if (f) { setErr($(f[0]), f[1], f[2]); $(f[0]).focus(); } else fail("e_send"); return; }

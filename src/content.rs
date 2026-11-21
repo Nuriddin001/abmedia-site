@@ -64,6 +64,9 @@ pub struct SiteData {
     pub offer_minutes: u32,
     pub bonus: Tr,
     pub contacts: Contacts,
+    /// Google Apps Script web app that appends each form request to the
+    /// "AB Media — requests" Google Sheet (the static site has no server of its own)
+    pub leads_sheet: Option<&'static str>,
     pub featured: [&'static str; 2],
     pub metrics: Vec<CaseMetric>,
     pub cjm: CjmModel,
@@ -98,6 +101,8 @@ pub fn site() -> SiteData {
             youtube: Some("https://www.youtube.com/@abrorbaxtiyarovich"),
             email: None,
         },
+        // Apps Script project "AB Media requests" (Google account jalolovnuriddin51), writes to the "AB Media — requests" sheet
+        leads_sheet: Some("https://script.google.com/macros/s/AKfycbxWZGHMbo5I-Xoo1IXqQBDXOIEhqA5vH9dJCIjP1hosAS2u7sFOi700QSIyinG1CxW_Lw/exec"),
         // The two films shown first in Work (and in the opening montage)
         featured: ["Good Day Cappuccino", "Sales Doctor Academy"],
         // No verified views or results yet
