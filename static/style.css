@@ -621,3 +621,60 @@ dialog.room::backdrop{background:rgba(5,7,8,.84);backdrop-filter:blur(4px)}
   .reel-media{transform:none}
   .bres>*,.done,.faq details[open] p,dialog.room[open]{animation:none!important}
 }
+
+/* ---------- light / dark switch (top right) ---------- */
+.theme{display:flex;gap:2px;padding:3px;border:1px solid var(--edge);border-radius:10px;flex:none}
+.theme button{display:grid;place-items:center;width:32px;height:30px;padding:0;border:0;border-radius:7px;background:none;color:var(--mist);cursor:pointer;transition:color .15s ease,background-color .2s ease}
+.theme button:hover{color:var(--snow)}
+.theme button[aria-pressed="true"]{background:var(--snow);color:var(--night)}
+.theme .ic{width:16px;height:16px}
+
+/* ---------- light theme: the page turns white; the film scenes keep their dark screen ---------- */
+html[data-theme="light"]{
+  color-scheme:light;
+  --night:#F7F6F2; --night-2:#EEECE6; --night-3:#E4E1D9;
+  --edge:rgba(13,17,19,.11); --edge-2:rgba(13,17,19,.2);
+  --snow:#0D1113; --mist:#4A545A; --dim:#6B757A;
+  --tungsten:#C27C0E; --tungsten-2:#A3640A; --tungsten-wash:rgba(194,124,14,.08);
+}
+/* things that sit on film, photos or the black screen stay dark */
+html[data-theme="light"] .hero,
+html[data-theme="light"] .cc-media,
+html[data-theme="light"] .mon,
+html[data-theme="light"] .shots,
+html[data-theme="light"] .why-ph,
+html[data-theme="light"] .intro,
+html[data-theme="light"] dialog.room .rb video{
+  --night:#0B0D0F; --night-2:#111417; --night-3:#171B1F;
+  --edge:rgba(226,234,236,.10); --edge-2:rgba(226,234,236,.18);
+  --snow:#EDF1F1; --mist:#8F9AA0; --dim:#5C666C;
+  --tungsten:#F4A62A; --tungsten-2:#FFC56A;
+  color:var(--snow);
+}
+html[data-theme="light"] .top{background:rgba(247,246,242,.82)}
+@media (pointer:coarse){html[data-theme="light"] .top{background:rgba(247,246,242,.97)}}
+/* light text on dark chips: these used "ink" text on a "snow" background, which both turn dark */
+html[data-theme="light"] .langs button[aria-pressed="true"],
+html[data-theme="light"] .chip.full,
+html[data-theme="light"] .opts input:checked+label,
+html[data-theme="light"] .faq summary::after,
+html[data-theme="light"] .tabs button[aria-pressed="true"],
+html[data-theme="light"] .cur{color:#F7F6F2}
+html[data-theme="light"] .journey{background:radial-gradient(70% 50% at 70% 20%,#F2E6CF 0%,var(--night) 70%)}
+html[data-theme="light"] .bar{background:linear-gradient(180deg,rgba(13,17,19,.03),rgba(13,17,19,.015))}
+html[data-theme="light"] .bar::before{background:repeating-linear-gradient(0deg,transparent 0 23px,rgba(13,17,19,.05) 23px 24px)}
+html[data-theme="light"] .fill{background:linear-gradient(180deg,#9AA4A9,#6B757A)}
+html[data-theme="light"] .scope-svg .g{stroke:rgba(13,17,19,.08)}
+html[data-theme="light"] .scope-svg .base{stroke:rgba(13,17,19,.28)}
+html[data-theme="light"] .scope-svg .end{stroke:rgba(13,17,19,.42)}
+html[data-theme="light"] .scope-svg .ln-ad,html[data-theme="light"] .probe.ad i{stroke:#7E898E;background:#7E898E}
+html[data-theme="light"] .scope-svg .ln-film{filter:drop-shadow(0 0 6px rgba(194,124,14,.35))}
+html[data-theme="light"] .edit{background:#E7E4DD}
+html[data-theme="light"] .clip{background:linear-gradient(180deg,#FFFFFF,#F1EEE8);border-color:rgba(13,17,19,.14)}
+html[data-theme="light"] .clip.sup{background:repeating-linear-gradient(-45deg,#F1EEE8 0 6px,#E6E2DA 6px 12px)}
+html[data-theme="light"] .stg li,html[data-theme="light"] .sl span{background:rgba(13,17,19,.05)}
+html[data-theme="light"] .formcard{background:#FFFFFF;box-shadow:0 30px 60px -40px rgba(13,17,19,.35),0 0 0 1px var(--edge)}
+html[data-theme="light"] .foot{background:var(--night-2)}
+html[data-theme="light"] .offer{box-shadow:0 16px 40px -18px rgba(13,17,19,.45)}
+html[data-theme="light"] dialog.room::backdrop{background:rgba(13,17,19,.55)}
+html[data-theme="light"] body::after{opacity:.035}

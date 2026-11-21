@@ -10,8 +10,9 @@
 <meta name="theme-color" content="#0B0D0F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- dark from the very first frame, even before any file arrives -->
-<style>html,body{background:#0B0D0F;color:#EDF1F1}</style>
+<!-- the chosen theme (light or dark, dark by default) is applied before the first frame, so the page never flashes -->
+<script>try{if(localStorage.getItem("abm-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
+<style>html,body{background:#0B0D0F;color:#EDF1F1}html[data-theme=light],html[data-theme=light] body{background:#F7F6F2;color:#0D1113}</style>
 <!-- fonts never hold the page back: it paints at once and the fonts swap in when they arrive -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Noto+Kufi+Arabic:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Noto+Kufi+Arabic:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
@@ -24,6 +25,8 @@
   <symbol id="i-arrow" viewBox="0 0 20 20"><path d="M3 10h13M11 5l5 5-5 5"/></symbol>
   <symbol id="i-x" viewBox="0 0 20 20"><path d="M6 6l8 8M14 6l-8 8"/></symbol>
   <symbol id="i-play" viewBox="0 0 20 20"><path d="M7 4.5v11l9-5.5z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z"/></symbol>
   <symbol id="i-reel" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="7.3" r="1.7"/><circle cx="16.5" cy="10.6" r="1.7"/><circle cx="14.8" cy="15.9" r="1.7"/><circle cx="9.2" cy="15.9" r="1.7"/><circle cx="7.5" cy="10.6" r="1.7"/></symbol>
   <symbol id="i-clap" viewBox="0 0 24 24"><path d="M3.5 10.5h17v9.5h-17zM3.5 10.5l-.6-3.8 16.4-2.6.6 3.8zM8.2 6l2 4.5M13.7 5.1l2 4.6"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><circle cx="9" cy="12" r="5.2"/><circle cx="15" cy="12" r="5.2"/></symbol>
@@ -47,6 +50,7 @@
     <nav class="nav" id="nav" aria-label="Sections"><a href="#journey"></a><a href="#cases"></a><a href="#how"></a><a href="#faq"></a></nav>
     <div class="langs" role="group" aria-label="Language"><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="ar">AR</button></div>
     <a class="btn btn-t btn-sm" href="#request" data-i="hero_cta"></a>
+    <div class="theme" role="group" aria-label="Light or dark"><button type="button" data-theme-set="light" aria-label="Light"><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg></button><button type="button" data-theme-set="dark" aria-label="Dark"><svg class="ic" aria-hidden="true"><use href="#i-moon"/></svg></button></div>
   </div>
   <i class="prog" id="prog" aria-hidden="true"></i>
 </header>

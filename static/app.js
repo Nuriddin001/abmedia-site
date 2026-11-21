@@ -15,6 +15,7 @@ const $$ = s => Array.from(document.querySelectorAll(s));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
 const coarse = matchMedia("(pointer: coarse)").matches;
+const isLight = () => document.documentElement.getAttribute("data-theme") === "light";
 /* phones get light copies of the films (media/m/: 854 px, no sound, ~4x smaller) for the opening, the previews
    and the planner, so the photos are not stuck behind 14 MB downloads; the viewing room always plays the full film */
 const LITE = coarse || matchMedia("(max-width: 760px)").matches;
@@ -327,12 +328,12 @@ function initFlow(){
         if (gi < 4 && gates[gi] && gi <= flow.step && p.x >= gates[gi].x - gates[gi].w * .35) { p.st = 1; p.vy = -20 - Math.random() * 30; p.vx *= .25; }
         p.a = Math.min(1, p.a + dt * 3) * (p.x > edge ? Math.max(0, 1 - (p.x - edge) / 50) : 1);
         if (p.x > edge + 50 || p.x > W + 10) spawn(p, -10 - Math.random() * 120);
-        if (p.x > 0) { g.fillStyle = "rgba(255,197,106," + (.85 * p.a).toFixed(3) + ")"; g.beginPath(); g.arc(p.x, p.y, 2.1, 0, 6.283); g.fill(); }
+        if (p.x > 0) { g.fillStyle = (isLight() ? "rgba(194,124,14," : "rgba(255,197,106,") + (.85 * p.a).toFixed(3) + ")"; g.beginPath(); g.arc(p.x, p.y, 2.1, 0, 6.283); g.fill(); }
       } else {
         if (p.st === 1) { p.vy += 260 * dt; p.y += p.vy * dt; p.x += p.vx * dt; if (p.y >= base) { p.y = base; p.st = 2; p.t = 0; } }
         else { p.t += dt; if (p.t > 1.6) { spawn(p, -10 - Math.random() * 120); continue; } }
         const k = p.st === 2 ? Math.max(0, 1 - p.t / 1.6) : 1;
-        g.fillStyle = "rgba(143,154,160," + (.55 * k).toFixed(3) + ")"; g.beginPath(); g.arc(p.x, p.y, 1.9, 0, 6.283); g.fill();
+        g.fillStyle = (isLight() ? "rgba(107,117,122," : "rgba(143,154,160,") + (.55 * k).toFixed(3) + ")"; g.beginPath(); g.arc(p.x, p.y, 1.9, 0, 6.283); g.fill();
       }
     }
     g.globalCompositeOperation = "source-over";
@@ -780,6 +781,15 @@ function setScene(id){
 }
 
 $$(".langs button").forEach(b => b.addEventListener("click", () => { if (b.dataset.lang === lang) return; lang = b.dataset.lang; store.set("abm-lang2", lang); render(); }));
+
+/* ---------- light / dark: two icons top right; the choice is remembered on this device ---------- */
+function setTheme(theme){
+  if (theme === "light") root.setAttribute("data-theme", "light"); else root.removeAttribute("data-theme");
+  $$(".theme button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeSet === (isLight() ? "light" : "dark"))));
+  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = isLight() ? "#F7F6F2" : "#0B0D0F";
+}
+$$(".theme button").forEach(b => b.addEventListener("click", () => { setTheme(b.dataset.themeSet); store.set("abm-theme", b.dataset.themeSet); }));
+setTheme(isLight() ? "light" : "dark");
 $$("#modes button").forEach(b => b.addEventListener("click", () => { mode = +b.dataset.m; renderProcess(); if (M()) M().refresh(); }));
 
 /* ---------- form ---------- */
