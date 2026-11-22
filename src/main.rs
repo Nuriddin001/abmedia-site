@@ -39,7 +39,21 @@ fn render_page(site_json: &str, preview: bool) -> String {
     assert!(TEMPLATE.contains(DATA_SLOT), "templates/index.html lost its data slot");
     // Keep the JSON from closing the <script> tag it sits in.
     let safe = site_json.replace("</", "<\\/");
-    TEMPLATE.replacen(DATA_SLOT, &safe, 1).replacen(PREVIEW_SLOT, if preview { "true" } else { "false" }, 1)
+    bust_cache(&TEMPLATE.replacen(DATA_SLOT, &safe, 1).replacen(PREVIEW_SLOT, if preview { "true" } else { "false" }, 1))
+}
+
+/// Adds `?v=<hash of the file>` to every local script and stylesheet link, so a browser
+/// that cached an older copy fetches the new one as soon as the file changes.
+fn bust_cache(html: &str) -> String {
+    use std::hash::{Hash, Hasher};
+    let mut out = html.to_string();
+    for file in ["static/style.css", "static/i18n.js", "static/motion.js", "static/app.js"] {
+        let Ok(bytes) = std::fs::read(file) else { continue };
+        let mut h = std::collections::hash_map::DefaultHasher::new();
+        bytes.hash(&mut h);
+        out = out.replace(&format!("\"{file}\""), &format!("\"{file}?v={:08x}\"", h.finish() as u32));
+    }
+    out
 }
 
 async fn index(State(st): State<Arc<AppState>>) -> Response {
