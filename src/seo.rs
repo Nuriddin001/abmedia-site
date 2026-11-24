@@ -161,6 +161,7 @@ pub fn localize(page: &str, lang: &str, site: &SiteData) -> String {
         .replacen(HEAD_SLOT, &head(lang, site), 1)
         .replacen("<h1 class=\"sr\" id=\"h1\"></h1>", &format!("<h1 class=\"sr\" id=\"h1\">{}</h1>", esc(t["hero_tag"].as_str().unwrap_or(""))), 1);
     html = fill_texts(&html, t);
+    html = html.replacen("<!--__FILMS__-->", &crate::films::footer_links(lang), 1);
     // The questions and answers: visible in the HTML (the script rebuilds the same list) and as FAQPage data
     let faq: Vec<(&str, &str)> = t["faq"].as_array().map(|a| a.iter().filter_map(|qa| Some((qa[0].as_str()?, qa[1].as_str()?))).collect()).unwrap_or_default();
     if !faq.is_empty() {
@@ -195,6 +196,15 @@ pub fn sitemap() -> String {
             s += &format!("    <xhtml:link rel=\"alternate\" hreflang=\"{a}\" href=\"{}\"/>\n", page_url(a));
         }
         s += &format!("    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{SITE_URL}\"/>\n    <changefreq>weekly</changefreq>\n  </url>\n");
+    }
+    for f in crate::films::films() {
+        for l in LANGS {
+            s += &format!("  <url>\n    <loc>{}</loc>\n", crate::films::film_url(l, &f.slug));
+            for a in LANGS {
+                s += &format!("    <xhtml:link rel=\"alternate\" hreflang=\"{a}\" href=\"{}\"/>\n", crate::films::film_url(a, &f.slug));
+            }
+            s += "  </url>\n";
+        }
     }
     s + "</urlset>\n"
 }

@@ -678,3 +678,9 @@ html[data-theme="light"] .foot{background:var(--night-2)}
 html[data-theme="light"] .offer{box-shadow:0 16px 40px -18px rgba(13,17,19,.45)}
 html[data-theme="light"] dialog.room::backdrop{background:rgba(13,17,19,.55)}
 html[data-theme="light"] body::after{opacity:.035}
+
+/* footer: a plain link to each film's own page (search engines index the films from there) */
+.films-nav{display:flex;flex-wrap:wrap;gap:6px 14px;font:500 .72rem/1.6 var(--f-mono);color:var(--dim)}
+.films-nav span{letter-spacing:.12em;text-transform:uppercase}
+.films-nav a{color:var(--mist);text-decoration:none}
+.films-nav a:hover{color:var(--snow)}

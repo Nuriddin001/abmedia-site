@@ -11,6 +11,7 @@
 
 mod content;
 mod leads;
+mod films;
 mod seo;
 
 use axum::{
@@ -99,9 +100,14 @@ async fn main() {
             let dir = if lang == "en" { root.clone() } else { root.join(lang) };
             std::fs::create_dir_all(&dir).expect("language folder");
             std::fs::write(dir.join("index.html"), seo::localize(&page, lang, &site)).expect("write index.html");
+            for film in films::films() {
+                let fdir = dir.join("work").join(&film.slug);
+                std::fs::create_dir_all(&fdir).expect("film folder");
+                std::fs::write(fdir.join("index.html"), films::page(lang, &film, site.contacts.phone)).expect("write film page");
+            }
         }
         std::fs::write(root.join("sitemap.xml"), seo::sitemap()).expect("write sitemap.xml");
-        println!("static site written to {} (en, es, ru, ar + sitemap.xml)", root.display());
+        println!("static site written to {} (en, es, ru, ar, a page per film + sitemap.xml)", root.display());
         return;
     }
 
