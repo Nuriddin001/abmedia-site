@@ -11,6 +11,7 @@
 
 mod content;
 mod leads;
+mod seo;
 
 use axum::{
     extract::{ConnectInfo, State},
@@ -90,14 +91,21 @@ async fn main() {
 
     // `cargo run --release -- export` writes a ready index.html next to static/ and media/,
     // so the folder can be served as plain files (Vercel, GitHub Pages) without this server.
+    // One page per language (/, /es/, /ru/, /ar/) plus sitemap.xml, for search engines.
     if std::env::args().any(|a| a == "export") {
-        let out = root.join("index.html");
-        std::fs::write(&out, render_page(&site_json, true)).expect("write index.html");
-        println!("static preview written to {}", out.display());
+        let site = content::site();
+        let page = render_page(&site_json, true);
+        for lang in seo::LANGS {
+            let dir = if lang == "en" { root.clone() } else { root.join(lang) };
+            std::fs::create_dir_all(&dir).expect("language folder");
+            std::fs::write(dir.join("index.html"), seo::localize(&page, lang, &site)).expect("write index.html");
+        }
+        std::fs::write(root.join("sitemap.xml"), seo::sitemap()).expect("write sitemap.xml");
+        println!("static site written to {} (en, es, ru, ar + sitemap.xml)", root.display());
         return;
     }
 
-    let page = render_page(&site_json, false);
+    let page = seo::localize(&render_page(&site_json, false), "en", &content::site());
     let state = Arc::new(AppState {
         page,
         site_json,
