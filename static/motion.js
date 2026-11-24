@@ -173,7 +173,9 @@ function stepper(){
   /* after a step, ignore input until it has been quiet for a moment, so trackpad and flick momentum can't stack steps */
   let moving = false;
   const settle = () => { clearTimeout(quietT); quietT = setTimeout(() => { if (!moving) busy = false; }, 220); };
+  let goAt = -1e9, goTo = 0, wheelAt = -1e9;
   function go(to){
+    goAt = performance.now(); goTo = to;
     busy = moving = true; clearTimeout(quietT); clearTimeout(endT);
     let fin = false;
     const done = () => { if (fin) return; fin = true; clearTimeout(endT); moving = false; settle(); };
@@ -183,8 +185,8 @@ function stepper(){
     endT = setTimeout(done, 1400);
   }
   /* where should a move in direction `dir` land? null = leave it to normal scrolling */
-  function target(dir, projected){
-    const cur = y(), z = zones();
+  function target(dir, projected, from){
+    const cur = from != null ? from : y(), z = zones();
     for (const s of z) {
       const a = s[0], b = s[s.length - 1];
       if (cur >= a - 2 && cur <= b + 2) {
@@ -212,7 +214,20 @@ function stepper(){
     if (e.deltaMode === 0 && (Math.abs(e.deltaY) < 40 || e.deltaX !== 0)) padT = performance.now();
     if (pad()) return;
     const dir = Math.sign(e.deltaY); if (!dir) return;
-    if (busy) { e.preventDefault(); e.stopImmediatePropagation(); settle(); return; }
+    const now = performance.now(), fresh = now - wheelAt > 90; wheelAt = now;
+    if (busy) {
+      const eat = () => { e.preventDefault(); e.stopImmediatePropagation(); };
+      /* a new notch while a step is still gliding goes on to the next stop (from where the glide is heading),
+         so the wheel never has to be turned two or three times; a burst of events from one flick still counts once */
+      const back = dir !== Math.sign(goTo - y());
+      if (fresh && (back || now - goAt > 380)) {
+        const t = target(dir, goTo + e.deltaY * 1.2, back ? y() : goTo);
+        if (t != null && t !== goTo) { eat(); go(t); return; }
+        /* past the last stop the page scrolls normally again: hand this notch back to it */
+        if (t == null && !back && Math.abs(y() - goTo) < 40) { busy = moving = false; clearTimeout(quietT); clearTimeout(endT); return; }
+      }
+      eat(); settle(); return;
+    }
     const t = target(dir, goal() + e.deltaY * 1.2);
     if (t == null) return;
     e.preventDefault(); e.stopImmediatePropagation(); go(t);
