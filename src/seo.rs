@@ -21,23 +21,23 @@ struct Meta {
 fn meta(lang: &str) -> Meta {
     match lang {
         "es" => Meta {
-            title: "AB Media — Producción de video y storytelling para marcas",
-            description: "AB Media es un estudio de producción: storytelling, video y campañas go-to-market que hacen que los clientes te conozcan y confíen en ti. Auditoría de negocio gratis.",
+            title: "AB Media — Productora de vídeo corporativo y storytelling de marca",
+            description: "Productora de vídeo para empresas: spots publicitarios, vídeo corporativo y storytelling de marca con campañas go-to-market. Good Day, Sales Doctor Academy, IMZO. Auditoría de negocio gratis.",
             locale: "es_ES",
         },
         "ru" => Meta {
-            title: "AB Media — видеопродакшн и сторителлинг для брендов",
-            description: "AB Media — продакшн-студия: сторителлинг, видео и go-to-market кампании, чтобы клиенты узнали вас и доверяли вам. Бесплатный аудит бизнеса.",
+            title: "AB Media — видеопродакшн для бизнеса: имиджевые и рекламные ролики",
+            description: "Видеопродакшн полного цикла для бизнеса: имиджевые и рекламные ролики, сторителлинг и go-to-market кампании. Good Day, Sales Doctor Academy, IMZO. Бесплатный аудит бизнеса.",
             locale: "ru_RU",
         },
         "ar" => Meta {
-            title: "AB Media — إنتاج الفيديو وسرد القصص للعلامات التجارية",
-            description: "AB Media استوديو إنتاج: سرد القصص والفيديو وحملات دخول السوق ليعرفك العملاء ويثقوا بك. تدقيق مجاني لعملك.",
+            title: "AB Media — شركة إنتاج فيديوهات وإعلانات تجارية بأسلوب سرد القصص",
+            description: "شركة إنتاج فيديوهات للشركات: تصوير إعلانات تجارية احترافية وفيديو تعريفي للشركة وسرد قصص العلامة التجارية مع حملات دخول السوق. تدقيق مجاني لعملك.",
             locale: "ar_AR",
         },
         _ => Meta {
-            title: "AB Media — Video Production & Storytelling for Brands",
-            description: "AB Media is a production studio: storytelling, video and go-to-market campaigns that make customers know you and trust you. Free business audit.",
+            title: "AB Media — Storytelling Video Production & Brand Films",
+            description: "Storytelling video production company: brand films, commercials and go-to-market campaigns that make customers know and trust you. Good Day, Sales Doctor Academy, IMZO. Free business audit.",
             locale: "en_US",
         },
     }
@@ -161,6 +161,19 @@ pub fn localize(page: &str, lang: &str, site: &SiteData) -> String {
         .replacen(HEAD_SLOT, &head(lang, site), 1)
         .replacen("<h1 class=\"sr\" id=\"h1\"></h1>", &format!("<h1 class=\"sr\" id=\"h1\">{}</h1>", esc(t["hero_tag"].as_str().unwrap_or(""))), 1);
     html = fill_texts(&html, t);
+    // The questions and answers: visible in the HTML (the script rebuilds the same list) and as FAQPage data
+    let faq: Vec<(&str, &str)> = t["faq"].as_array().map(|a| a.iter().filter_map(|qa| Some((qa[0].as_str()?, qa[1].as_str()?))).collect()).unwrap_or_default();
+    if !faq.is_empty() {
+        let items: String = faq.iter().map(|(q, a)| format!("<details><summary>{}</summary><p>{}</p></details>", esc(q), esc(a))).collect();
+        html = html.replacen("<div class=\"faq\" id=\"faqlist\"></div>", &format!("<div class=\"faq\" id=\"faqlist\">{items}</div>"), 1);
+        let data = json!({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "inLanguage": lang,
+            "mainEntity": faq.iter().map(|(q, a)| json!({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })).collect::<Vec<_>>()
+        });
+        html = html.replacen("</head>", &format!("<script type=\"application/ld+json\">{}</script>\n</head>", data.to_string().replace("</", "<\\/")), 1);
+    }
     let titles: Value = LANGS.iter().map(|l| (l.to_string(), Value::from(meta(l).title))).collect::<serde_json::Map<_, _>>().into();
     html = html.replacen(
         "<script>window.ABM_DATA",
@@ -214,5 +227,7 @@ mod tests {
         assert!(ru.contains("hreflang=\"ar\" href=\"https://nuriddin001.github.io/abmedia-site/ar/\""));
         assert!(ru.contains("<link rel=\"canonical\" href=\"https://nuriddin001.github.io/abmedia-site/ru/\">"));
         assert!(!ru.contains("\"static/"));
+        assert!(ru.contains("\"@type\":\"FAQPage\""));
+        assert!(ru.contains("<div class=\"faq\" id=\"faqlist\"><details><summary>"));
     }
 }
