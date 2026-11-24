@@ -22,12 +22,12 @@ fn meta(lang: &str) -> Meta {
     match lang {
         "es" => Meta {
             title: "AB Media — Productora de vídeo corporativo y storytelling de marca",
-            description: "Productora de vídeo para empresas: spots publicitarios, vídeo corporativo y storytelling de marca con campañas go-to-market. Good Day, Sales Doctor Academy, IMZO. Auditoría de negocio gratis.",
+            description: "Productora de vídeo para empresas: spots publicitarios, vídeo corporativo y storytelling de marca. Good Day, Sales Doctor Academy, IMZO. Auditoría gratis.",
             locale: "es_ES",
         },
         "ru" => Meta {
             title: "AB Media — видеопродакшн для бизнеса: имиджевые и рекламные ролики",
-            description: "Видеопродакшн полного цикла для бизнеса: имиджевые и рекламные ролики, сторителлинг и go-to-market кампании. Good Day, Sales Doctor Academy, IMZO. Бесплатный аудит бизнеса.",
+            description: "Видеопродакшн для бизнеса: имиджевые и рекламные ролики, сторителлинг и go-to-market кампании. Good Day, Sales Doctor Academy, IMZO. Бесплатный аудит бизнеса.",
             locale: "ru_RU",
         },
         "ar" => Meta {
@@ -37,7 +37,7 @@ fn meta(lang: &str) -> Meta {
         },
         _ => Meta {
             title: "AB Media — Storytelling Video Production & Brand Films",
-            description: "Storytelling video production company: brand films, commercials and go-to-market campaigns that make customers know and trust you. Good Day, Sales Doctor Academy, IMZO. Free business audit.",
+            description: "Storytelling video production company: brand films, commercials and go-to-market campaigns. Good Day, Sales Doctor Academy, IMZO. Free business audit.",
             locale: "en_US",
         },
     }
