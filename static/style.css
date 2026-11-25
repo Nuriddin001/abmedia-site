@@ -177,6 +177,9 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .js .hero-foot>*{animation:foot-in .9s cubic-bezier(.215,.61,.355,1) 1.85s both}.js .hero-foot>*+*{animation-delay:1.97s}
 .js.seen .intro{display:none}.js.seen .mark .m-l b{animation-delay:.05s}.js.seen .mark .m-r b{animation-delay:.13s}
 .js.seen .hero-foot>*{animation-delay:1.25s}.js.seen .hero-foot>*+*{animation-delay:1.37s}
+/* phones: the slate opens from a letterbox slit (the bars start part-way open), so the mark shows from the first frame */
+@keyframes lb-up-p{from{transform:translateY(-55%)}to{transform:translateY(-100%)}}@keyframes lb-down-p{from{transform:translateY(55%)}to{transform:translateY(100%)}}
+@media (max-width:760px), (max-aspect-ratio:1/1){.js .intro .lb-t{animation-name:lb-up-p}.js .intro .lb-b{animation-name:lb-down-p}}
 .no-motion .intro{display:none}.no-motion .mark b,.no-motion .hero-foot>*{animation:none!important}
 @media (prefers-reduced-motion:reduce){.js .intro{display:none}.js .mark b,.js .hero-foot>*{animation:none}}
 .line{position:absolute;z-index:3;inset-inline-start:var(--pad);bottom:clamp(110px,18vh,190px);margin:0;font:600 clamp(2.4rem,7vw,6.6rem)/.98 var(--f-disp);letter-spacing:-.05em;white-space:pre-line;pointer-events:none;opacity:0}

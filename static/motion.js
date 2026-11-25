@@ -67,7 +67,7 @@ function intro(){
   const box = $("#intro");
   if (!box) return;
   const anims = box.getAnimations ? box.getAnimations({ subtree: true }) : [];
-  const bar = anims.find(a => a.animationName === "lb-down");
+  const bar = anims.find(a => a.animationName.startsWith("lb-down"));
   if (api.introSeen || !bar || bar.playState === "finished") { box.remove(); return; }
   api.markIntro();
   if (lenis) lenis.stop();
