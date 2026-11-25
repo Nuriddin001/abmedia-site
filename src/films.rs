@@ -68,6 +68,94 @@ fn kind(lang: &str) -> &'static str {
     match lang { "es" => "vídeo de marca", "ru" => "рекламный ролик", "ar" => "فيلم إعلاني", _ => "brand film" }
 }
 
+/// Section headings and the sentences built from the film's facts, per language.
+struct Words {
+    task: &'static str, idea: &'static str, prod: &'static str, result: &'static str, credits: &'static str,
+    facts: &'static str, did: &'static str, ran: &'static str, bts: &'static str, verified: &'static str, want: &'static str,
+    scope: [(&'static str, &'static str); 8],
+}
+
+fn words(lang: &str) -> Words {
+    match lang {
+        "es" => Words {
+            task: "Tarea", idea: "Idea", prod: "Producción", result: "Resultado", credits: "Créditos",
+            facts: "Cliente: {client} ({cat}). Productora: {exec}. Duración: {dur}.",
+            did: "Lo que hizo AB Media en esta película:",
+            ran: "La película terminada dura {dur} y se puede ver completa al principio de esta página.",
+            bts: "Más abajo hay un vídeo de {bdur} grabado durante el rodaje.",
+            verified: "AB Media publica solo cifras verificadas, por eso aquí no figuran visualizaciones ni resultados de negocio de esta película.",
+            want: "¿Quieres una película así para tu marca?",
+            scope: [
+                ("c", "Concepto: AB Media ideó la película."),
+                ("s", "Guion: AB Media escribió el guion."),
+                ("pre", "Preproducción: AB Media preparó el rodaje."),
+                ("prod", "Rodaje: AB Media filmó la película."),
+                ("post", "Posproducción: AB Media montó y terminó la película."),
+                ("preS", "Supervisión de preproducción: AB Media supervisó la preparación del rodaje."),
+                ("prodS", "Supervisión de rodaje: AB Media supervisó el rodaje."),
+                ("postS", "Supervisión de posproducción: AB Media supervisó el montaje y el acabado."),
+            ],
+        },
+        "ru" => Words {
+            task: "Задача", idea: "Идея", prod: "Производство", result: "Результат", credits: "Команда",
+            facts: "Клиент: {client} ({cat}). Продакшн-компания: {exec}. Хронометраж: {dur}.",
+            did: "Что AB Media сделала в этом проекте:",
+            ran: "Готовый фильм длится {dur}, его можно посмотреть целиком в начале страницы.",
+            bts: "Ниже — бэкстейдж со съёмок длиной {bdur}.",
+            verified: "AB Media публикует только проверенные цифры, поэтому просмотры и бизнес-результаты этого фильма здесь не указаны.",
+            want: "Хотите такой фильм для своего бренда?",
+            scope: [
+                ("c", "Концепция: AB Media придумала идею фильма."),
+                ("s", "Сценарий: AB Media написала сценарий."),
+                ("pre", "Препродакшн: AB Media подготовила съёмку."),
+                ("prod", "Съёмка: AB Media сняла фильм."),
+                ("post", "Постпродакшн: AB Media смонтировала фильм и довела его до финала."),
+                ("preS", "Надзор за препродакшном: AB Media контролировала подготовку съёмки."),
+                ("prodS", "Надзор за съёмкой: AB Media контролировала съёмочный процесс."),
+                ("postS", "Надзор за постпродакшном: AB Media контролировала монтаж и финальную обработку."),
+            ],
+        },
+        "ar" => Words {
+            task: "المهمة", idea: "الفكرة", prod: "الإنتاج", result: "النتيجة", credits: "فريق العمل",
+            facts: "العميل: {client} ({cat}). شركة الإنتاج: {exec}. المدة: {dur}.",
+            did: "ما قامت به AB Media في هذا الفيلم:",
+            ran: "مدة الفيلم النهائي {dur}، ويمكن مشاهدته كاملًا في أعلى هذه الصفحة.",
+            bts: "في الأسفل فيلم من كواليس التصوير مدته {bdur}.",
+            verified: "تنشر AB Media الأرقام الموثقة فقط، لذلك لا تظهر هنا أرقام المشاهدات أو النتائج التجارية لهذا الفيلم.",
+            want: "هل تريد فيلمًا كهذا لعلامتك التجارية؟",
+            scope: [
+                ("c", "الفكرة: ابتكرت AB Media فكرة الفيلم."),
+                ("s", "السيناريو: كتبت AB Media السيناريو."),
+                ("pre", "ما قبل الإنتاج: جهّزت AB Media للتصوير."),
+                ("prod", "التصوير: صوّرت AB Media الفيلم."),
+                ("post", "ما بعد الإنتاج: قامت AB Media بالمونتاج وإنهاء الفيلم."),
+                ("preS", "الإشراف على ما قبل الإنتاج: أشرفت AB Media على التحضير للتصوير."),
+                ("prodS", "الإشراف على التصوير: أشرفت AB Media على عملية التصوير."),
+                ("postS", "الإشراف على ما بعد الإنتاج: أشرفت AB Media على المونتاج واللمسات النهائية."),
+            ],
+        },
+        _ => Words {
+            task: "Task", idea: "Idea", prod: "Production", result: "Result", credits: "Credits",
+            facts: "Client: {client} ({cat}). Production company: {exec}. Running time: {dur}.",
+            did: "What AB Media did on this film:",
+            ran: "The finished film runs {dur} and can be watched in full at the top of this page.",
+            bts: "Below is a {bdur} backstage film shot during the production.",
+            verified: "AB Media publishes only verified figures, so view counts and business results for this film are not listed here.",
+            want: "Want a film like this for your brand?",
+            scope: [
+                ("c", "Concept: AB Media came up with the idea of the film."),
+                ("s", "Script: AB Media wrote the script."),
+                ("pre", "Pre-production: AB Media prepared the shoot."),
+                ("prod", "Shoot: AB Media filmed it."),
+                ("post", "Post-production: AB Media edited and finished the film."),
+                ("preS", "Pre-production supervision: AB Media oversaw how the shoot was prepared."),
+                ("prodS", "Shoot supervision: AB Media oversaw the shoot."),
+                ("postS", "Post-production supervision: AB Media oversaw the edit and the finishing."),
+            ],
+        },
+    }
+}
+
 fn iso_duration(d: &str) -> String {
     let (m, s) = d.split_once(':').unwrap_or(("0", d));
     format!("PT{}M{}S", m.trim_start_matches('0').parse::<u32>().unwrap_or(0), s.parse::<u32>().unwrap_or(0))
@@ -98,9 +186,21 @@ pub fn page(lang: &str, film: &Film, phone: &str) -> String {
     let up = if lang == "en" { "../../" } else { "../../../" };
     let home = if lang == "en" { "../../" } else { "../../" };
     let dir = if lang == "ar" { "rtl" } else { "ltr" };
-    let title = format!("{client} — {} | AB Media", kind(lang));
-    let mut desc = format!("{concept} {task}");
-    if desc.chars().count() > 158 { desc = desc.chars().take(155).collect::<String>() + "…"; }
+    let service = crate::film_copy::service(&film.slug, lang);
+    let title = format!("{client} — {service} {}", crate::film_copy::by_ab(lang));
+    let desc = crate::film_copy::description(&film.slug, lang).map(str::to_string).unwrap_or_else(|| format!("{concept} {task}"));
+    let w = words(lang);
+    let cat = t["cat"][client].as_str().unwrap_or("");
+    let exec = c["exec"].as_str().unwrap_or("");
+    let facts = w.facts.replace("{client}", client).replace("{cat}", cat).replace("{exec}", exec).replace("{dur}", dur);
+    let did: String = c["scope"].as_array().unwrap().iter().filter_map(Value::as_str)
+        .filter_map(|k| w.scope.iter().find(|(id, _)| *id == k)).map(|(_, s)| format!("<li>{}</li>", esc(s))).collect();
+    let mut result = w.ran.replace("{dur}", dur);
+    if let Some(bd) = c["bts"]["dur"].as_str() { result = format!("{result} {}", w.bts.replace("{bdur}", bd)); }
+    // the studio's own copy from the main page: what it fixes and why brands work with it
+    let fixes: String = t["fixes"].as_array().map(|a| a.iter().map(|s| format!("<li><b>{}</b> {}</li>", esc(s[0].as_str().unwrap_or("")), esc(s[1].as_str().unwrap_or("")))).collect()).unwrap_or_default();
+    let why: String = t["why"].as_array().map(|a| a.iter().filter_map(Value::as_str).map(|s| format!("<li>{}</li>", esc(s))).collect()).unwrap_or_default();
+    let steps: String = t["steps"].as_array().map(|a| a.iter().map(|s| format!("<li><b>{}</b> {}</li>", esc(s[0].as_str().unwrap_or("")), esc(s[1].as_str().unwrap_or("")))).collect()).unwrap_or_default();
     let url = film_url(lang, &film.slug);
     let thumb = format!("{SITE_URL}media/{}.jpg", film.slug);
     let video = format!("{SITE_URL}media/{}.mp4", film.slug);
@@ -130,7 +230,7 @@ pub fn page(lang: &str, film: &Film, phone: &str) -> String {
     let scope: String = c["scope"].as_array().unwrap().iter().filter_map(Value::as_str).map(|k| format!("<span>{}</span>", esc(t["sc"][k].as_str().unwrap_or(k)))).collect();
     let credits: String = c["credits"].as_array().unwrap().iter().map(|cr| format!("<div><span>{}</span><b>{}</b></div>", esc(t[cr[0].as_str().unwrap()].as_str().unwrap_or("")), esc(&people(&cr[1], &p, lang)))).collect();
     let bts = c["bts"]["video"].as_str().map(|b| format!(
-        "<h2>{}</h2><video controls playsinline preload=\"none\" poster=\"{up}media/{b}.jpg\" src=\"{up}media/{b}.mp4\"></video>",
+        "<h3>{}</h3><video controls playsinline preload=\"none\" poster=\"{up}media/{b}.jpg\" src=\"{up}media/{b}.mp4\"></video>",
         esc(t["v_bts"].as_str().unwrap_or("Backstage")))).unwrap_or_default();
     let others: String = films().iter().filter(|f| f.slug != film.slug).map(|f| format!("<a href=\"../{}/\">{}</a>", f.slug, esc(f.data["client"].as_str().unwrap()))).collect();
 
@@ -166,6 +266,8 @@ dt{{font:500 .7rem "JetBrains Mono",monospace;letter-spacing:.12em;text-transfor
 .sl{{display:flex;flex-wrap:wrap;gap:6px}}.sl span{{border:1px solid var(--edge);border-radius:99px;padding:2px 10px;font-size:.88rem}}
 .cr div{{display:flex;gap:12px;justify-content:space-between;border-bottom:1px solid var(--edge);padding:6px 0}}.cr span{{color:var(--mist)}}
 h2{{font:600 1.2rem "Unbounded",sans-serif;margin:40px 0 14px}}
+.did,.how{{padding-inline-start:1.2em;margin:0 0 8px}}.did li,.how li{{margin:6px 0}}.how b{{color:var(--tungsten);font-weight:600}}
+h3{{font:600 1rem "Unbounded",sans-serif;margin:28px 0 12px}}[dir=rtl] h3{{font-family:"IBM Plex Sans Arabic",sans-serif}}
 .cta{{display:inline-block;margin:8px 0 48px;background:var(--tungsten);color:#111;font-weight:700;text-decoration:none;padding:14px 22px;border-radius:12px}}
 .more{{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:64px}}.more a{{border:1px solid var(--edge);border-radius:99px;padding:6px 14px;text-decoration:none;color:var(--mist)}}.more a:hover{{color:var(--snow)}}
 footer{{border-top:1px solid var(--edge);color:var(--mist);font-size:.85rem;padding:28px 0 40px}}
@@ -177,17 +279,32 @@ footer{{border-top:1px solid var(--edge);color:var(--mist);font-size:.85rem;padd
 <p class="eb">{cs_eb}</p>
 <h1>{client_e}</h1>
 <p class="meta">{kind} · {dur} · {exec_e}</p>
-<video controls playsinline preload="metadata" poster="{up}media/{slug}.jpg" src="{up}media/{slug}.mp4"></video>
+<video controls playsinline preload="metadata" poster="{up}media/{slug}.webp" src="{up}media/{slug}.mp4"></video>
+<p class="sl">{scope}</p>
+<h2>{h_task}</h2>
+<p>{task_e}</p>
+<p>{facts_e}</p>
+<h2>{h_idea}</h2>
 <p class="concept">{concept_e}</p>
-<dl>
-<div><dt>{l_exec}</dt><dd>{exec_e}</dd></div>
-<div><dt>{l_task}</dt><dd>{task_e}</dd></div>
-<div><dt>{l_scope}</dt><dd class="sl">{scope}</dd></div>
-<div><dt>{l_team}</dt><dd class="cr">{credits}</dd></div>
-</dl>
+<h2>{h_prod}</h2>
+<p>{did_h}</p>
+<ul class="did">{did}</ul>
+<h2>{h_result}</h2>
+<p>{result_e}</p>
+<!-- TODO(owner): add verified results for this film (views, reach, sales or brand-lift figures, year of release, awards) -->
+<p>{verified_e}</p>
 {bts}
+<h2>{h_credits}</h2>
+<div class="cr">{credits}</div>
 <h2>{rq_h}</h2>
+<p>{want_e} {rq_p}</p>
 <a class="cta" href="{home}#request">{cta}</a>
+<h2>{how_h}</h2>
+<ol class="how">{steps}</ol>
+<h2>{f_h}</h2>
+<ul class="how">{fixes}</ul>
+<h2>{why_h}</h2>
+<ul class="did">{why}</ul>
 <h2>{cs_h}</h2>
 <nav class="more">{others}</nav>
 </main>
@@ -195,10 +312,12 @@ footer{{border-top:1px solid var(--edge);color:var(--mist);font-size:.85rem;padd
 </body>
 </html>
 "##,
-        cs_eb = esc(t["cs_eb"].as_str().unwrap_or("")), client_e = esc(client), kind = esc(kind(lang)), exec_e = esc(c["exec"].as_str().unwrap_or("")),
+        cs_eb = esc(t["cs_eb"].as_str().unwrap_or("")), client_e = esc(client), kind = esc(service), exec_e = esc(exec),
+        h_task = esc(w.task), h_idea = esc(w.idea), h_prod = esc(w.prod), h_result = esc(w.result), h_credits = esc(w.credits),
+        facts_e = esc(&facts), did_h = esc(w.did), result_e = esc(&result), verified_e = esc(w.verified), want_e = esc(w.want),
+        rq_p = esc(t["rq_p"].as_str().unwrap_or("")), how_h = esc(t["how_h"].as_str().unwrap_or("")),
+        f_h = esc(t["f_h"].as_str().unwrap_or("")), why_h = esc(t["why_h"].as_str().unwrap_or("")),
         slug = film.slug, concept_e = esc(concept), task_e = esc(task),
-        l_exec = esc(t["l_exec"].as_str().unwrap_or("")), l_task = esc(t["l_task"].as_str().unwrap_or("")),
-        l_scope = esc(t["l_scope"].as_str().unwrap_or("")), l_team = esc(t["l_team"].as_str().unwrap_or("")),
         rq_h = esc(t["rq_h"].as_str().unwrap_or("")), cta = esc(t["hero_cta"].as_str().unwrap_or("")), cs_h = esc(t["cs_h"].as_str().unwrap_or("")),
         name = esc(t["name"].as_str().unwrap_or("")), tel = phone.replace(' ', ""),
     )
@@ -218,6 +337,17 @@ mod tests {
                 assert!(html.contains("\"@type\":\"VideoObject\"") && html.contains("\"position\":3"), "{l} {}", f.slug);
                 assert!(html.contains(&format!("src=\"{}media/{}.mp4\"", if l == "en" { "../../" } else { "../../../" }, f.slug)));
                 assert!(!html.contains("{{"));
+            }
+        }
+        // hand-written descriptions: 140 to 155 characters, never cut with an ellipsis; the case sections are all there
+        for f in &fs {
+            for l in LANGS {
+                let d = crate::film_copy::description(&f.slug, l).expect("description for every film and language");
+                assert!((140..=155).contains(&d.chars().count()) && !d.contains('…'), "{l} {}: {}", f.slug, d.chars().count());
+                let html = page(l, f, "+1 929 652 4542");
+                assert!(html.contains(&format!("<title>{} — ", f.client())) && html.contains("AB Media</title>"));
+                assert_eq!(html.matches("<h2>").count(), 10, "{l} {}", f.slug);
+                assert!(html.contains("href=\"../../#request\"") || html.contains("#request\""));
             }
         }
         assert_eq!(iso_duration("1:50"), "PT1M50S");
