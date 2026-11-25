@@ -39,6 +39,7 @@ function init(a){
   built = true;
   settle();
   intro();
+  autoplay();
   return true;
 }
 
@@ -145,21 +146,92 @@ function duel(){
   }).scrollTrigger;
 }
 
+/* the stops inside the pinned scenes, as scroll positions: hero (play button, film lit in the frame, full film + line),
+   manifesto (start, end), journey (four beats), ads-vs-story chart (start, end) */
+function zones(){
+  const z = [], at = (st, ks) => ks.map(k => st.start + (st.end - st.start) * k);
+  const h = content[0] && content[0].scrollTrigger, m = content[1] && content[1].scrollTrigger;
+  if (h) z.push(at(h, [0, .7, 1]));
+  if (m) z.push(at(m, [0, 1]));
+  if (storyST) z.push(at(storyST, [0, 1 / 3, 2 / 3, 1]));
+  if (duelST) z.push(at(duelST, [0, 1]));
+  return z.map(s => s.map(Math.round));
+}
+
+/* ---------- autoplay: with nobody scrolling, the page plays on its own like a film ----------
+   Each stop is held long enough to read what is on screen (about four words a second, 3 s at least, 10 s at most),
+   then the page glides on: through the stops of the pinned scenes, then about a screen at a time, as far as the
+   request form, where it stops. A wheel, touch, key or click hands control back at once; after 15 s without
+   input it carries on from wherever the visitor left it. */
+let autoGlide = false;
+function autoplay(){
+  if (api.reduce) return;
+  const IDLE = 15000;
+  let timer = 0, idleT = 0, on = true;
+  const y = () => lenis ? lenis.animatedScroll : scrollY;
+  const endY = () => { const r = $("#request"); return r ? Math.round(r.getBoundingClientRect().top + y() - 66) : Infinity; };
+  const held = () => !!document.querySelector("dialog[open]") || document.hidden || (lenis && lenis.isStopped) ||
+    !!(document.activeElement && document.activeElement.closest && document.activeElement.closest("input,textarea,select"));
+  /* how many words the visitor can see right now */
+  function words(){
+    /* text that is faded out (a beat not shown yet, a closed panel) is not counted */
+    const seen = new Map();
+    const shown = el => {
+      if (!el || el === document.body) return true;
+      if (seen.has(el)) return seen.get(el);
+      const cs = getComputedStyle(el);
+      const v = cs.visibility !== "hidden" && cs.display !== "none" && parseFloat(cs.opacity) > .15 && shown(el.parentElement);
+      seen.set(el, v); return v;
+    };
+    let n = 0; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let t = w.nextNode(); t; t = w.nextNode()) {
+      const s = t.nodeValue.trim(); if (!s) continue;
+      const el = t.parentElement; if (!el || el.closest("script,style,noscript,[aria-hidden=true],.intro")) continue;
+      const r = el.getBoundingClientRect(); if (!r.width || r.bottom < 60 || r.top > innerHeight) continue;
+      if (!shown(el)) continue;
+      n += s.split(/\s+/).length;
+    }
+    return n;
+  }
+  const hold = () => Math.min(10, Math.max(3, 1.5 + words() / 4)) * 1000;
+  function next(){
+    const cur = y(), z = zones(), end = endY();
+    if (cur >= end - 2) return null;
+    for (const s of z) if (cur >= s[0] - 2 && cur < s[s.length - 1] - 2) return s.find(v => v > cur + 2);
+    let to = cur + Math.round(innerHeight * .85);
+    for (const s of z) if (s[0] > cur + 2 && s[0] < to) { to = s[0]; break; }
+    return Math.min(to, end);
+  }
+  function step(){
+    timer = 0;
+    if (!on) return;
+    if (held()) { timer = setTimeout(step, 1000); return; }
+    const to = next();
+    if (to == null) { on = false; return; }
+    const dur = Math.min(3, Math.max(1.2, Math.abs(to - y()) / innerHeight * 1.8));
+    let fin = false;
+    const done = () => { if (fin) return; fin = true; autoGlide = false; if (on) timer = setTimeout(step, hold()); };
+    autoGlide = true;
+    /* a glide that gets cut short (a resize, a refresh) must not stall the autoplay */
+    setTimeout(done, dur * 1000 + 500);
+    if (lenis) lenis.scrollTo(to, { duration: dur, easing: x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2, force: true, onComplete: done });
+    else { scrollTo({ top: to, behavior: "smooth" }); setTimeout(done, dur * 1000); }
+  }
+  const takeOver = () => {
+    on = false; autoGlide = false; clearTimeout(timer); timer = 0; clearTimeout(idleT);
+    idleT = setTimeout(() => { on = true; timer = setTimeout(step, 0); }, IDLE);
+  };
+  ["wheel", "touchstart", "keydown", "pointerdown"].forEach(ev => addEventListener(ev, takeOver, { passive: true, capture: true }));
+  /* the first hold starts once the opening slate is gone */
+  timer = setTimeout(step, 1200 + hold());
+}
+
 /* ---------- one scroll = one scene ----------
    Inside the pinned scenes the page moves stop to stop: a single wheel notch, swipe or arrow key goes to the
    next stop, and a fast flick goes to the next stop too (the rest of its momentum is swallowed).
    Stops: hero (play button, film lit in the frame, full film + line), manifesto (start, end),
    journey (four beats), ads-vs-story chart (start, end). Between scenes the page scrolls normally. */
 function stepper(){
-  const zones = () => {
-    const z = [], at = (st, ks) => ks.map(k => st.start + (st.end - st.start) * k);
-    const h = content[0] && content[0].scrollTrigger, m = content[1] && content[1].scrollTrigger;
-    if (h) z.push(at(h, [0, .7, 1]));
-    if (m) z.push(at(m, [0, 1]));
-    if (storyST) z.push(at(storyST, [0, 1 / 3, 2 / 3, 1]));
-    if (duelST) z.push(at(duelST, [0, 1]));
-    return z.map(s => s.map(Math.round));
-  };
   let busy = false, quietT = 0, endT = 0;
   const locked = () => !!document.querySelector("dialog[open]") || (lenis && lenis.isStopped && !busy);
   const y = () => lenis ? lenis.animatedScroll : scrollY;
@@ -243,7 +315,7 @@ function stepper(){
   addEventListener("scroll", () => {
     clearTimeout(restT);
     restT = setTimeout(() => {
-      if (busy || (lenis && lenis.isStopped)) return;
+      if (busy || autoGlide || (lenis && lenis.isStopped)) return;
       const cur = y();
       for (const s of zones()) {
         if (cur > s[0] + 2 && cur < s[s.length - 1] - 2 && !s.some(v => Math.abs(v - cur) <= 2)) {
