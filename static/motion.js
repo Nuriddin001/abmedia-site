@@ -80,8 +80,9 @@ function intro(){
 }
 /* on arrival: the two halves of the mark slide in from the edges and come into focus, the film fades up */
 function heroIn(delay){
-  gsap.from(".m-l b", { x: () => -innerWidth * .04, opacity: 0, filter: "blur(18px)", duration: 1.6, ease: "expo.out", delay });
-  gsap.from(".m-r b", { x: () => innerWidth * .04, opacity: 0, filter: "blur(18px)", duration: 1.6, ease: "expo.out", delay: delay + .08 });
+  /* the halves start out of focus and aside (style.css paints them that way before the script runs, so the mark is on screen at once) */
+  gsap.fromTo(".m-l b", { x: () => -innerWidth * .04, filter: "blur(18px)" }, { x: 0, filter: "blur(0px)", duration: 1.6, ease: "expo.out", delay });
+  gsap.fromTo(".m-r b", { x: () => innerWidth * .04, filter: "blur(18px)" }, { x: 0, filter: "blur(0px)", duration: 1.6, ease: "expo.out", delay: delay + .08 });
   gsap.from(".hero-foot > *", { y: 14, opacity: 0, duration: .9, stagger: .12, ease: "power3.out", delay: delay + 1.2 });
 }
 

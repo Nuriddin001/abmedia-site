@@ -897,9 +897,14 @@ if (finePointer && !reduce) {
 
 /* ---------- start ---------- */
 render();
+/* the page is painted first (the mark is the first large thing on screen), then the heavy parts start on the next frame */
+let motionOK = true;
+requestAnimationFrame(() => setTimeout(boot, 0));
+function boot(){
 initStars();
 initReel();
 initFlow();
-const motionOK = !!(window.ABM_MOTION && window.ABM_MOTION.init({ setStory, setScene, setDuel, setHero, frameClip, reduce, introSeen: !!store.get("abm-intro", true), markIntro: () => store.set("abm-intro", "1", true), flowLayout: () => flow.layout && flow.layout() }));
+motionOK = !!(window.ABM_MOTION && window.ABM_MOTION.init({ setStory, setScene, setDuel, setHero, frameClip, reduce, introSeen: !!store.get("abm-intro", true), markIntro: () => store.set("abm-intro", "1", true), flowLayout: () => flow.layout && flow.layout() }));
 if (!motionOK) { root.classList.add("no-motion"); $("#intro").remove(); setStoryStep(3); setDuel(1); $$(".fx").forEach(x => x.classList.add("hit")); $("#offer").classList.remove("away"); $("#reel").style.clipPath = frameClip(); }
+}
 })();
