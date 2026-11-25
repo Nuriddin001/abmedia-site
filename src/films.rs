@@ -7,8 +7,8 @@ use crate::seo::{page_url, LANGS, SITE_URL};
 use serde_json::{json, Value};
 
 const I18N: &str = include_str!("../static/i18n.js");
-/// The day the films were first published on this site (first commit of media/*.mp4).
-const PUBLISHED: &str = "2026-11-16";
+/// The day the films were first published on this site (first commit of media/*.mp4), Tashkent time.
+const PUBLISHED: &str = "2026-11-16T00:00:00+05:00";
 
 fn block(name: &str, open: &str, close: &str) -> Value {
     let start = I18N.find(&format!("const {name} = ")).expect("i18n.js block") + format!("const {name} = ").len();
@@ -29,6 +29,31 @@ pub fn films() -> Vec<Film> {
 /// The films as written in i18n.js (for the cards on the main page).
 pub fn cases_json() -> Value {
     block("CASES", "[", "]")
+}
+
+impl Film {
+    pub fn client(&self) -> &str {
+        self.data["client"].as_str().unwrap_or(&self.slug)
+    }
+}
+
+/// VideoObject for one film in one language (used on the film's own page and for the opening film on the main page).
+pub fn video_ld(lang: &str, film: &Film) -> Value {
+    let c = &film.data;
+    let client = film.client();
+    let tt = &c["t"][lang];
+    let (task, concept) = (tt[0].as_str().unwrap_or(""), tt[1].as_str().unwrap_or(""));
+    json!({
+        "@context": "https://schema.org", "@type": "VideoObject",
+        "@id": format!("{}#video", film_url(lang, &film.slug)),
+        "name": format!("{client} — {}", kind(lang)), "description": format!("{concept} {task}"),
+        "thumbnailUrl": [format!("{SITE_URL}media/{}.jpg", film.slug), format!("{SITE_URL}media/{}.webp", film.slug)],
+        "contentUrl": format!("{SITE_URL}media/{}.mp4", film.slug),
+        "embedUrl": film_url(lang, &film.slug),
+        "uploadDate": PUBLISHED, "duration": iso_duration(c["dur"].as_str().unwrap_or("")),
+        "inLanguage": lang, "productionCompany": { "@type": "Organization", "name": c["exec"] },
+        "creator": { "@id": crate::seo::org_id() }
+    })
 }
 
 pub fn film_url(lang: &str, slug: &str) -> String {
@@ -86,18 +111,13 @@ pub fn page(lang: &str, film: &Film, phone: &str) -> String {
     head += &format!("<link rel=\"alternate\" hreflang=\"x-default\" href=\"{}\">\n", film_url("en", &film.slug));
     head += &format!("<meta property=\"og:type\" content=\"video.other\">\n<meta property=\"og:site_name\" content=\"AB Media\">\n<meta property=\"og:url\" content=\"{url}\">\n<meta property=\"og:title\" content=\"{}\">\n<meta property=\"og:description\" content=\"{}\">\n<meta property=\"og:image\" content=\"{thumb}\">\n<meta property=\"og:video\" content=\"{video}\">\n<meta property=\"og:video:type\" content=\"video/mp4\">\n<meta name=\"twitter:card\" content=\"summary_large_image\">\n", esc(&title), esc(&desc));
     let ld = json!([
-        {
-            "@context": "https://schema.org", "@type": "VideoObject",
-            "name": format!("{client} — {}", kind(lang)), "description": format!("{concept} {task}"),
-            "thumbnailUrl": thumb, "contentUrl": video, "uploadDate": PUBLISHED, "duration": iso_duration(dur),
-            "inLanguage": lang, "productionCompany": { "@type": "Organization", "name": c["exec"] },
-            "creator": { "@type": "Organization", "name": "AB Media", "url": SITE_URL }
-        },
+        video_ld(lang, film),
         {
             "@context": "https://schema.org", "@type": "BreadcrumbList",
             "itemListElement": [
                 { "@type": "ListItem", "position": 1, "name": "AB Media", "item": page_url(lang) },
-                { "@type": "ListItem", "position": 2, "name": client, "item": url }
+                { "@type": "ListItem", "position": 2, "name": t["cs_eb"].as_str().unwrap_or("Work"), "item": format!("{}#cases", page_url(lang)) },
+                { "@type": "ListItem", "position": 3, "name": client, "item": url }
             ]
         }
     ]);
@@ -195,7 +215,7 @@ mod tests {
         for f in &fs {
             for l in LANGS {
                 let html = page(l, f, "+1 929 652 4542");
-                assert!(html.contains("\"@type\":\"VideoObject\""), "{l} {}", f.slug);
+                assert!(html.contains("\"@type\":\"VideoObject\"") && html.contains("\"position\":3"), "{l} {}", f.slug);
                 assert!(html.contains(&format!("src=\"{}media/{}.mp4\"", if l == "en" { "../../" } else { "../../../" }, f.slug)));
                 assert!(!html.contains("{{"));
             }

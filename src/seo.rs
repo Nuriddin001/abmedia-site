@@ -11,6 +11,8 @@ pub const LANGS: [&str; 4] = ["en", "es", "ru", "ar"];
 
 const I18N: &str = include_str!("../static/i18n.js");
 const HEAD_SLOT: &str = "<!--__SEO_HEAD__-->";
+/// One id for the studio, so every page's data points at the same Organization.
+pub fn org_id() -> String { format!("{SITE_URL}#org") }
 pub const AR_FONTS: &str = "&family=Noto+Kufi+Arabic:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&";
 
 struct Meta {
@@ -97,15 +99,19 @@ fn head(lang: &str, site: &SiteData) -> String {
         same_as.extend([p.en, p.es, p.ru, p.ar].into_iter().flatten());
     }
     same_as.extend(c.youtube);
-    let org = json!({
+    let mut org = json!({
         "@context": "https://schema.org",
         "@type": "Organization",
+        "@id": org_id(),
         "name": "AB Media",
         "url": SITE_URL,
+        // TODO(owner): replace media/logo.png with the official square logo (at least 112 x 112 px) if there is one
+        "logo": { "@type": "ImageObject", "url": format!("{SITE_URL}media/logo.png"), "width": 512, "height": 512 },
         "image": image,
         "description": m.description,
         "telephone": c.phone.replace(' ', ""),
-        "founder": { "@type": "Person", "name": "Abror Bakhtiyarovich" },
+        // TODO(owner): confirm which of these profiles are the founder's own and which are the studio's
+        "founder": { "@type": "Person", "@id": format!("{SITE_URL}#founder"), "name": "Abror Bakhtiyarovich", "jobTitle": "Founder", "sameAs": same_as },
         "sameAs": same_as,
         "knowsLanguage": LANGS,
         "contactPoint": { "@type": "ContactPoint", "contactType": "sales", "telephone": c.phone.replace(' ', ""), "availableLanguage": ["English", "Spanish", "Russian", "Arabic"] }
@@ -117,9 +123,22 @@ fn head(lang: &str, site: &SiteData) -> String {
         "description": m.description,
         "url": url,
         "inLanguage": lang,
-        "publisher": { "@type": "Organization", "name": "AB Media", "url": SITE_URL }
+        "publisher": { "@id": org_id() }
     });
-    for v in [org, page] {
+    // TODO(owner): the business email (content.rs contacts.email) is not set yet
+    if let Some(e) = c.email { org["email"] = Value::from(e); }
+    // TODO(owner): areaServed (countries / cities the studio works in) is not added until the owner names them
+    // the films on the page as a list (each item leads to the film's own page) and the opening film itself
+    let films = crate::films::films();
+    let list = json!({
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": format!("AB Media — {}", texts()[lang]["cs_eb"].as_str().unwrap_or("Work")),
+        "numberOfItems": films.len(),
+        "itemListElement": films.iter().enumerate().map(|(i, f)| json!({ "@type": "ListItem", "position": i + 1, "name": f.client(), "url": crate::films::film_url(lang, &f.slug) })).collect::<Vec<_>>()
+    });
+    let hero = films.iter().find(|f| f.client() == site.featured[0]).map(|f| crate::films::video_ld(lang, f));
+    for v in [Some(org), Some(page), Some(list), hero].into_iter().flatten() {
         h += &format!("<script type=\"application/ld+json\">{}</script>\n", v.to_string().replace("</", "<\\/"));
     }
     h
@@ -255,5 +274,12 @@ mod tests {
         assert!(!ru.contains("\"static/"));
         assert!(ru.contains("\"@type\":\"FAQPage\""));
         assert!(ru.contains("<div class=\"faq\" id=\"faqlist\"><details><summary>"));
+        // structured data: one Organization with a logo, the films as a list, the opening film as a video
+        assert!(ru.contains(&format!("\"@id\":\"{SITE_URL}#org\"")) && ru.contains("media/logo.png"));
+        assert!(ru.contains("\"@type\":\"ItemList\"") && ru.contains("\"numberOfItems\":7"));
+        assert!(ru.contains("\"@type\":\"VideoObject\"") && ru.contains("\"uploadDate\":") && ru.contains("\"duration\":\"PT0M45S\""));
+        // only the Arabic page carries the Arabic fonts
+        assert!(!ru.contains("Noto+Kufi+Arabic") && !ru.contains("__AR_FONTS__"));
+        assert!(localize(&page, "ar", &crate::content::site()).contains("Noto+Kufi+Arabic"));
     }
 }
