@@ -16,8 +16,9 @@
 <!-- fonts never hold the page back: it paints at once and the fonts swap in when they arrive -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=__AR_FONTS__display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=__AR_FONTS__display=swap"></noscript>
+<link rel="preload" as="font" type="font/woff2" href="static/fonts/unbounded-latin.woff2" crossorigin>
 <link rel="stylesheet" href="static/style.css">
-<script>document.documentElement.classList.add("js");</script>
+<script>document.documentElement.classList.add("js");try{if(sessionStorage.getItem("abm-intro"))document.documentElement.classList.add("seen")}catch(e){}</script>
 </head>
 <body>
 

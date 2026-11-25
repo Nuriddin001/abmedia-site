@@ -60,30 +60,23 @@ function refresh(){ if (!built) return; buildContent(); settle(); }
 /* triggers are created out of page order (the manifesto is rebuilt per language), so put them back in order before measuring */
 function settle(){ if (ScrollTrigger.sort) ScrollTrigger.sort(); ScrollTrigger.refresh(); }
 
-/* ---------- opening slate: the bars part like a letterbox opening ---------- */
+/* ---------- opening slate: the bars part like a letterbox opening ----------
+   The bars, the mark coming into focus and the line under it are CSS animations (style.css) that start with the
+   first paint; here the slate only runs its timecode, can be skipped, and is removed once the bars are open. */
 function intro(){
   const box = $("#intro");
-  if (!box) { heroIn(0); return; }
-  if (api.introSeen) { box.remove(); heroIn(.05); return; }
+  if (!box) return;
+  const anims = box.getAnimations ? box.getAnimations({ subtree: true }) : [];
+  const bar = anims.find(a => a.animationName === "lb-down");
+  if (api.introSeen || !bar || bar.playState === "finished") { box.remove(); return; }
   api.markIntro();
   if (lenis) lenis.stop();
-  const tc = $("#intro-tc"); let f = 0;
-  const iv = setInterval(() => { f += 2; tc.textContent = ["00", "00", String(Math.floor(f / 25)).padStart(2, "0"), String(f % 25).padStart(2, "0")].join(":"); }, 40);
-  const tl = gsap.timeline({ onComplete(){ clearInterval(iv); box.remove(); if (lenis) lenis.start(); } });
-  tl.from(".intro-c > *", { opacity: 0, y: 10, stagger: .05, duration: .3, ease: "power3.out" })
-    .to(".intro-c", { opacity: 0, duration: .2, ease: "power2.out" }, "+=.1")
-    .to(".lb-t", { yPercent: -100, duration: .5, ease: "expo.inOut" }, "<")
-    .to(".lb-b", { yPercent: 100, duration: .5, ease: "expo.inOut" }, "<")
-    .add(() => heroIn(0), "-=.3");
-  const skip = () => { tl.timeScale(4); ["wheel", "keydown", "pointerdown", "touchstart"].forEach(ev => removeEventListener(ev, skip)); };
+  const tc = $("#intro-tc"), t0 = performance.now();
+  const iv = setInterval(() => { const f = Math.floor((performance.now() - t0) / 40); tc.textContent = ["00", "00", String(Math.floor(f / 25)).padStart(2, "0"), String(f % 25).padStart(2, "0")].join(":"); }, 40);
+  const done = () => { clearInterval(iv); box.remove(); if (lenis) lenis.start(); };
+  bar.finished.then(done, done);
+  const skip = () => { anims.forEach(a => { a.playbackRate = 4; }); ["wheel", "keydown", "pointerdown", "touchstart"].forEach(ev => removeEventListener(ev, skip)); };
   ["wheel", "keydown", "pointerdown", "touchstart"].forEach(ev => addEventListener(ev, skip, { passive: true }));
-}
-/* on arrival: the two halves of the mark slide in from the edges and come into focus, the film fades up */
-function heroIn(delay){
-  /* the halves start out of focus and aside (style.css paints them that way before the script runs, so the mark is on screen at once) */
-  gsap.fromTo(".m-l b", { x: () => -innerWidth * .04, filter: "blur(18px)" }, { x: 0, filter: "blur(0px)", duration: 1.6, ease: "expo.out", delay });
-  gsap.fromTo(".m-r b", { x: () => innerWidth * .04, filter: "blur(18px)" }, { x: 0, filter: "blur(0px)", duration: 1.6, ease: "expo.out", delay: delay + .08 });
-  gsap.from(".hero-foot > *", { y: 14, opacity: 0, duration: .9, stagger: .12, ease: "power3.out", delay: delay + 1.2 });
 }
 
 /* ---------- header: scroll progress + scene name ---------- */
