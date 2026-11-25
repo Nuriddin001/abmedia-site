@@ -5,8 +5,8 @@
 use crate::content::SiteData;
 use serde_json::{json, Value};
 
-/// The public address of the site (GitHub Pages). Canonical links, hreflang and the sitemap use it.
-pub const SITE_URL: &str = "https://nuriddin001.github.io/abmedia-site/";
+/// The public address of the site lives in config.rs (one value; canonical, hreflang, OG, JSON-LD and the sitemap use it).
+pub use crate::config::SITE_URL;
 pub const LANGS: [&str; 4] = ["en", "es", "ru", "ar"];
 
 const I18N: &str = include_str!("../static/i18n.js");
@@ -187,6 +187,11 @@ pub fn localize(page: &str, lang: &str, site: &SiteData) -> String {
     html
 }
 
+/// The page for a missing address: links to the four language homes, never indexed.
+pub fn not_found() -> String {
+    include_str!("../templates/404.html").replace("{BASE}", crate::config::base_path())
+}
+
 /// sitemap.xml with every language page and its alternates.
 pub fn sitemap() -> String {
     let mut s = String::from("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n");
@@ -234,8 +239,8 @@ mod tests {
         let ru = localize(&page, "ru", &crate::content::site());
         assert!(ru.contains("<html lang=\"ru\" dir=\"ltr\">"));
         assert!(ru.contains("\"../static/app.js"));
-        assert!(ru.contains("hreflang=\"ar\" href=\"https://nuriddin001.github.io/abmedia-site/ar/\""));
-        assert!(ru.contains("<link rel=\"canonical\" href=\"https://nuriddin001.github.io/abmedia-site/ru/\">"));
+        assert!(ru.contains(&format!("hreflang=\"ar\" href=\"{SITE_URL}ar/\"")));
+        assert!(ru.contains(&format!("<link rel=\"canonical\" href=\"{SITE_URL}ru/\">")));
         assert!(!ru.contains("\"static/"));
         assert!(ru.contains("\"@type\":\"FAQPage\""));
         assert!(ru.contains("<div class=\"faq\" id=\"faqlist\"><details><summary>"));

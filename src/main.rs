@@ -9,6 +9,7 @@
 //! Environment: HOST (default 127.0.0.1), PORT (default 8080),
 //! SITE_ROOT (folder with templates/, static/, media/; default: the crate folder).
 
+mod config;
 mod content;
 mod leads;
 mod films;
@@ -107,6 +108,13 @@ async fn main() {
             }
         }
         std::fs::write(root.join("sitemap.xml"), seo::sitemap()).expect("write sitemap.xml");
+        std::fs::write(root.join("404.html"), seo::not_found()).expect("write 404.html");
+        // robots.txt and CNAME only mean something at the root of an own domain (see config.rs, DOMAIN.md)
+        if config::at_domain_root() {
+            std::fs::write(root.join("robots.txt"), config::robots_txt()).expect("write robots.txt");
+            std::fs::write(root.join("CNAME"), format!("{}
+", config::host())).expect("write CNAME");
+        }
         println!("static site written to {} (en, es, ru, ar, a page per film + sitemap.xml)", root.display());
         return;
     }
