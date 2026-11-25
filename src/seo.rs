@@ -220,6 +220,9 @@ pub fn not_found() -> String {
 }
 
 /// sitemap.xml with every language page and its alternates.
+/// The day the pages last changed in content (main pages and film pages): change it whenever the texts change.
+pub const LASTMOD: &str = "2026-11-25";
+
 pub fn sitemap() -> String {
     let mut s = String::from("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n");
     for l in LANGS {
@@ -227,7 +230,7 @@ pub fn sitemap() -> String {
         for a in LANGS {
             s += &format!("    <xhtml:link rel=\"alternate\" hreflang=\"{a}\" href=\"{}\"/>\n", page_url(a));
         }
-        s += &format!("    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{SITE_URL}\"/>\n    <changefreq>weekly</changefreq>\n  </url>\n");
+        s += &format!("    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{SITE_URL}\"/>\n    <lastmod>{LASTMOD}</lastmod>\n  </url>\n");
     }
     for f in crate::films::films() {
         for l in LANGS {
@@ -235,7 +238,7 @@ pub fn sitemap() -> String {
             for a in LANGS {
                 s += &format!("    <xhtml:link rel=\"alternate\" hreflang=\"{a}\" href=\"{}\"/>\n", crate::films::film_url(a, &f.slug));
             }
-            s += "  </url>\n";
+            s += &format!("    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{}\"/>\n    <lastmod>{LASTMOD}</lastmod>\n  </url>\n", crate::films::film_url("en", &f.slug));
         }
     }
     s + "</urlset>\n"
