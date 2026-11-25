@@ -22,6 +22,16 @@ const LITE = coarse || matchMedia("(max-width: 760px)").matches;
 /* each language has its own page (/, /es/, /ru/, /ar/); ROOT leads from it back to the shared media/ */
 const ROOT = window.ABM_ROOT || "", MEDIA = ROOT + "media/";
 const vsrc = name => MEDIA +(LITE ? "m/" : "") + name + ".mp4";
+/* the opening montage on phones plays a 10 s clip cut at the montage's own start point (media/h/, under 1 MB) */
+const heroSrc = name => LITE ? MEDIA + "h/" + name + ".mp4" : MEDIA + name + ".mp4";
+/* covers and photos come as AVIF / WebP with the JPG as fallback */
+const cover = name => MEDIA + name + ".webp";
+function picture(name, alt, w, h){
+  const pic = el("picture");
+  [["avif", "image/avif"], ["webp", "image/webp"]].forEach(([ext, type]) => { const s = el("source"); s.type = type; s.srcset = MEDIA + name + "." + ext; pic.append(s); });
+  const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.width = w; im.height = h; im.alt = alt; im.src = MEDIA + name + ".jpg"; pic.append(im);
+  return [pic, im];
+}
 /* on phones the films wait until the page and its photos have arrived: on a slow connection the text and the photos come first */
 const afterLoad = fn => { if (document.readyState === "complete") setTimeout(fn, 600); else addEventListener("load", () => setTimeout(fn, 600), { once: true }); };
 let pageReady = !LITE;
@@ -218,11 +228,13 @@ function initReel(){
   reel.shots.forEach((ci, k) => {
     const v = el("video"); v.muted = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "none";
     /* phones only ever show the first film here, so only its cover is fetched */
-    if (!LITE || k === 0) v.poster = MEDIA + CASES[ci].video + ".jpg";
-    v.addEventListener("loadedmetadata", () => { if (v.dataset.seeked) return; v.dataset.seeked = "1"; try { v.currentTime = v.duration * START[k]; } catch (e) {} });
+    if (!LITE || k === 0) v.poster = cover(CASES[ci].video);
+    /* the phone clip already starts at the right moment and loops; the full film is cued to its start point */
+    if (LITE) v.loop = true;
+    else v.addEventListener("loadedmetadata", () => { if (v.dataset.seeked) return; v.dataset.seeked = "1"; try { v.currentTime = v.duration * START[k]; } catch (e) {} });
     media.append(v); reel.vids.push(v); segs.append(el("i"));
   });
-  reel.load = k => { const v = reel.vids[k]; if (!pageReady) return; if (!v.src) { v.src = vsrc(CASES[reel.shots[k]].video); v.preload = "auto"; v.load(); } };
+  reel.load = k => { const v = reel.vids[k]; if (!pageReady) return; if (!v.src) { v.src = heroSrc(CASES[reel.shots[k]].video); v.preload = "auto"; v.load(); } };
   show(0);
   new IntersectionObserver(es => { reel.on = es[0].isIntersecting; sync(); }).observe($("#reel"));
   document.addEventListener("visibilitychange", sync);
@@ -476,7 +488,7 @@ function renderResult(){
   let mon = box.querySelector(".mon");
   if (!mon || changedCase) {
     mon = el("button", "mon"); mon.type = "button"; mon.dataset.cursor = "play";
-    const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.dataset.poster = MEDIA + cs.video + ".jpg";
+    const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.dataset.poster = cover(cs.video);
     /* the film (and its cover) load only once the planner is near the screen (see runDesk), so they never compete with the photos above */
     if (!reduce) { v.preload = "none"; v.dataset.src = vsrc(cs.video) + "#t=6"; } else v.poster = v.dataset.poster;
     mon.append(v, el("span", "mon-rec"), el("span", "mon-l3"), el("span", "mon-tc"));
@@ -571,7 +583,7 @@ function renderFixes(){
 const room = $("#room"), rv = $("#room-v");
 function openRoom(i){
   if (i < 0) return;
-  openIdx = i; rv.src = MEDIA + CASES[i].video + ".mp4"; rv.poster = MEDIA + CASES[i].video + ".jpg"; fillRoom();
+  openIdx = i; rv.src = MEDIA + CASES[i].video + ".mp4"; rv.poster = cover(CASES[i].video); fillRoom();
   if (room.showModal) room.showModal(); else room.setAttribute("open", "");
   if (M()) M().pause(true);
   const p = rv.play(); if (p && p.catch) p.catch(() => {});
@@ -589,7 +601,7 @@ function fillRoom(){
   const tabs = $("#room-tabs"); tabs.replaceChildren(); tabs.hidden = !c.bts;
   if (c.bts) [[t.v_film, c.video], [t.v_bts, c.bts.video]].forEach(([label, src]) => {
     const b = el("button", null, label); b.type = "button"; b.setAttribute("aria-pressed", String(rv.src.endsWith("/" + src + ".mp4")));
-    b.addEventListener("click", () => { rv.src = MEDIA + src + ".mp4"; rv.poster = MEDIA + src + ".jpg"; const p = rv.play(); if (p && p.catch) p.catch(() => {}); tabs.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); });
+    b.addEventListener("click", () => { rv.src = MEDIA + src + ".mp4"; rv.poster = cover(src); const p = rv.play(); if (p && p.catch) p.catch(() => {}); tabs.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); });
     tabs.append(b);
   });
 }
@@ -627,9 +639,9 @@ function renderCases(){
     const media = el("button", "cc-media"); media.type = "button"; media.dataset.cursor = "play"; media.dataset.video = c.video;
     media.setAttribute("aria-label", t.open_case + ": " + c.client);
     /* "lazy" must be set before the address, or the photo downloads at once even far down the page */
-    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.width = 1280; im.height = 720; im.src = MEDIA + c.video + ".jpg"; im.alt = t.alt_still.replace("{c}", c.client);
+    const [pic] = picture(c.video, t.alt_still.replace("{c}", c.client), 1280, 720);
     const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "none";
-    media.append(im, v, el("span", "cc-n", String(k + 1).padStart(2, "0")), el("span", "tc", c.dur + (c.bts ? " + " + c.bts.dur : "")));
+    media.append(pic, v, el("span", "cc-n", String(k + 1).padStart(2, "0")), el("span", "tc", c.dur + (c.bts ? " + " + c.bts.dur : "")));
     media.addEventListener("click", () => openRoom(i));
     const head = el("div", "cc-head"), l = el("div");
     /* the film's name is a real link to its own page (work/<slug>/), so crawlers and new tabs reach it */
@@ -671,21 +683,21 @@ function bindPreviews(){
 
 /* ---------- what happens next: three big frames on one strip of film ---------- */
 const SHOTS = [
-  { img: MEDIA + "portrait.jpg", w: 1024, h: 1024, pos: "30% 72%", zoom: 1.35, hud: "READING", kind: "scan" },
-  { img: MEDIA + "abror-timessquare.jpg", w: 720, h: 1280, pos: "50% 38%", zoom: 1.08, hud: "LIVE · 00:30:00", kind: "wave" },
-  { img: MEDIA + "sales-doctor-backstage.jpg", w: 1280, h: 720, pos: "50% 45%", zoom: 1.15, hud: "CONCEPT v1", kind: "grid" }
+  { img: "portrait", w: 1024, h: 1024, pos: "30% 72%", zoom: 1.35, hud: "READING", kind: "scan" },
+  { img: "abror-timessquare", w: 720, h: 1280, pos: "50% 38%", zoom: 1.08, hud: "LIVE · 00:30:00", kind: "wave" },
+  { img: "sales-doctor-backstage", w: 1280, h: 720, pos: "50% 45%", zoom: 1.15, hud: "CONCEPT v1", kind: "grid" }
 ];
 function renderShots(t){
   const box = $("#shots"), lit = $$("#shots .shot.lit").length;
   box.querySelectorAll(".shot").forEach(n => n.remove());
   t.nx.forEach((title, i) => {
     const s = SHOTS[i], f = el("figure", "shot" + (i < lit ? " lit" : ""));
-    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.width = s.w; im.height = s.h; im.src = s.img; im.alt = i < 2 ? t.name : t.alt_bts; im.style.objectPosition = s.pos; im.style.setProperty("--z", s.zoom);
+    const [pic, im] = picture(s.img, i < 2 ? t.name : t.alt_bts, s.w, s.h); im.style.objectPosition = s.pos; im.style.setProperty("--z", s.zoom);
     const hud = el("span", "shot-hud"); hud.append(el("i"), document.createTextNode(s.hud));
     const fx = el("span", "shot-fx " + s.kind, null);
     if (s.kind === "wave") for (let k = 0; k < 18; k++) { const b = el("i"); b.style.setProperty("--k", k); fx.append(b); }
     const cap = el("figcaption"); cap.append(el("b", null, String(i + 1).padStart(2, "0")), el("h3", null, title));
-    f.append(im, fx, hud, cap); box.append(f);
+    f.append(pic, fx, hud, cap); box.append(f);
   });
 }
 
@@ -792,7 +804,13 @@ function setScene(id){
   $("#scene-t").textContent = t.scene_l + " · " + (t.scene[id] || "");
 }
 
-$$(".langs button").forEach(b => b.addEventListener("click", () => { if (b.dataset.lang === lang) return; lang = b.dataset.lang; store.set("abm-lang2", lang); render();
+/* Arabic type is only in the head of /ar/; anywhere else it is fetched the first time Arabic is chosen */
+function arFonts(){
+  if (lang !== "ar" || document.querySelector('link[href*="Noto+Kufi+Arabic"]')) return;
+  const l = el("link"); l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"; document.head.append(l);
+}
+arFonts();
+$$(".langs button").forEach(b => b.addEventListener("click", () => { if (b.dataset.lang === lang) return; lang = b.dataset.lang; store.set("abm-lang2", lang); arFonts(); render();
   /* the address follows the language, so a shared link opens the same language (static site only) */
   if (window.ABM_PREVIEW) try { history.replaceState(null, "", new URL(ROOT + (lang === "en" ? "" : lang + "/"), location.href).pathname + location.search + location.hash); } catch (e) {}
 }));

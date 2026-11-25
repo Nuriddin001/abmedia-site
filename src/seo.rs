@@ -11,6 +11,7 @@ pub const LANGS: [&str; 4] = ["en", "es", "ru", "ar"];
 
 const I18N: &str = include_str!("../static/i18n.js");
 const HEAD_SLOT: &str = "<!--__SEO_HEAD__-->";
+pub const AR_FONTS: &str = "&family=Noto+Kufi+Arabic:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&";
 
 struct Meta {
     title: &'static str,
@@ -65,6 +66,8 @@ fn head(lang: &str, site: &SiteData) -> String {
     let image = format!("{SITE_URL}media/good-day.jpg");
     let mut h = String::new();
     h += &format!("<title>{}</title>\n", esc(m.title));
+    // the first film's cover is the first large thing a phone paints, so it is fetched before anything else
+    h += &format!("<link rel=\"preload\" as=\"image\" type=\"image/webp\" href=\"{}media/good-day.webp\" fetchpriority=\"high\">\n", if lang == "en" { "" } else { "../" });
     h += &format!("<meta name=\"description\" content=\"{}\">\n", esc(m.description));
     h += &format!("<link rel=\"canonical\" href=\"{url}\">\n");
     for l in LANGS {
@@ -159,6 +162,8 @@ pub fn localize(page: &str, lang: &str, site: &SiteData) -> String {
     let mut html = page
         .replacen("<html lang=\"en\" dir=\"ltr\">", &format!("<html lang=\"{lang}\" dir=\"{dir}\">"), 1)
         .replacen(HEAD_SLOT, &head(lang, site), 1)
+        // the two Arabic families load only on /ar/ (the script adds them if a visitor switches to Arabic elsewhere)
+        .replace("&family=__AR_FONTS__", if lang == "ar" { AR_FONTS } else { "&" })
         .replacen("<h1 class=\"tag\" id=\"h1\"></h1>", &format!("<h1 class=\"tag\" id=\"h1\">{}</h1>", esc(t["hero_tag"].as_str().unwrap_or(""))), 1);
     // every section the script builds, already in the HTML (see prerender.rs); data-pre tells the script which language it is
     html = html.replacen(&format!("<html lang=\"{lang}\" dir=\"{dir}\">"), &format!("<html lang=\"{lang}\" dir=\"{dir}\" data-pre=\"{lang}\">"), 1);

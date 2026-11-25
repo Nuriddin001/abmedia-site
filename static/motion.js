@@ -70,11 +70,11 @@ function intro(){
   const tc = $("#intro-tc"); let f = 0;
   const iv = setInterval(() => { f += 2; tc.textContent = ["00", "00", String(Math.floor(f / 25)).padStart(2, "0"), String(f % 25).padStart(2, "0")].join(":"); }, 40);
   const tl = gsap.timeline({ onComplete(){ clearInterval(iv); box.remove(); if (lenis) lenis.start(); } });
-  tl.from(".intro-c > *", { opacity: 0, y: 10, stagger: .08, duration: .45, ease: "power3.out" })
-    .to(".intro-c", { opacity: 0, duration: .25, ease: "power2.out" }, "+=.35")
-    .to(".lb-t", { yPercent: -100, duration: .95, ease: "expo.inOut" }, "<")
-    .to(".lb-b", { yPercent: 100, duration: .95, ease: "expo.inOut" }, "<")
-    .add(() => heroIn(0), "-=.55");
+  tl.from(".intro-c > *", { opacity: 0, y: 10, stagger: .05, duration: .3, ease: "power3.out" })
+    .to(".intro-c", { opacity: 0, duration: .2, ease: "power2.out" }, "+=.1")
+    .to(".lb-t", { yPercent: -100, duration: .5, ease: "expo.inOut" }, "<")
+    .to(".lb-b", { yPercent: 100, duration: .5, ease: "expo.inOut" }, "<")
+    .add(() => heroIn(0), "-=.3");
   const skip = () => { tl.timeScale(4); ["wheel", "keydown", "pointerdown", "touchstart"].forEach(ev => removeEventListener(ev, skip)); };
   ["wheel", "keydown", "pointerdown", "touchstart"].forEach(ev => addEventListener(ev, skip, { passive: true }));
 }

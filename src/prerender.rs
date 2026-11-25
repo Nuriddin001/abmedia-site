@@ -64,6 +64,11 @@ fn key_order(name: &str) -> Vec<String> {
     body.split(',').filter_map(|kv| kv.split(':').next()).map(|k| k.trim().trim_matches('"').to_string()).filter(|k| !k.is_empty()).collect()
 }
 
+/// `<picture>` with AVIF and WebP sources and the JPG as fallback (the files sit side by side in media/).
+fn picture(name: &str, alt: &str, w: u32, h: u32) -> String {
+    format!("<picture><source type=\"image/avif\" srcset=\"media/{name}.avif\"><source type=\"image/webp\" srcset=\"media/{name}.webp\"><img loading=\"lazy\" decoding=\"async\" width=\"{w}\" height=\"{h}\" alt=\"{}\" src=\"media/{name}.jpg\"></picture>", esc(alt))
+}
+
 fn icon(id: &str) -> String {
     format!("<svg class=\"ic\" aria-hidden=\"true\"><use href=\"#i-{id}\"></use></svg>")
 }
@@ -122,9 +127,9 @@ pub fn sections(mut html: String, lang: &str, t: &Value, cases: &Value, site: &S
         let tc = match c["bts"]["dur"].as_str() { Some(b) => format!("{} + {b}", s(&c["dur"])), None => s(&c["dur"]).to_string() };
         let alt = s(&t["alt_still"]).replace("{c}", client);
         cards += &format!(
-            "<article class=\"cc{}{}\"><button class=\"cc-media\" type=\"button\" data-cursor=\"play\" data-video=\"{slug}\" aria-label=\"{}: {}\"><img loading=\"lazy\" decoding=\"async\" src=\"media/{slug}.jpg\" alt=\"{}\" width=\"1280\" height=\"720\"><video muted loop playsinline preload=\"none\"></video><span class=\"cc-n\">{:02}</span><span class=\"tc\">{}</span></button><div class=\"cc-head\"><div><h3><a href=\"work/{slug}/\">{}</a></h3><span class=\"cat\">{}</span></div></div></article>",
+            "<article class=\"cc{}{}\"><button class=\"cc-media\" type=\"button\" data-cursor=\"play\" data-video=\"{slug}\" aria-label=\"{}: {}\">{}<video muted loop playsinline preload=\"none\"></video><span class=\"cc-n\">{:02}</span><span class=\"tc\">{}</span></button><div class=\"cc-head\"><div><h3><a href=\"work/{slug}/\">{}</a></h3><span class=\"cat\">{}</span></div></div></article>",
             if big { " big" } else { "" }, if k >= 2 { " extra" } else { "" },
-            esc(s(&t["open_case"])), esc(client), esc(&alt), k + 1, esc(&tc), esc(client), esc(s(&t["cat"][client])),
+            esc(s(&t["open_case"])), esc(client), picture(slug, &alt, 1280, 720), k + 1, esc(&tc), esc(client), esc(s(&t["cat"][client])),
         );
     }
     fill(&mut html, "<div class=\"track\" id=\"track\">", "</div>", &cards);
@@ -174,13 +179,13 @@ pub fn sections(mut html: String, lang: &str, t: &Value, cases: &Value, site: &S
 
     // what happens after the request: three frames
     let shots = [
-        ("portrait.jpg", 1024, 1024, t["name"].clone(), "scan", "READING"),
-        ("abror-timessquare.jpg", 720, 1280, t["name"].clone(), "wave", "LIVE · 00:30:00"),
-        ("sales-doctor-backstage.jpg", 1280, 720, t["alt_bts"].clone(), "grid", "CONCEPT v1"),
+        ("portrait", 1024, 1024, t["name"].clone(), "scan", "READING"),
+        ("abror-timessquare", 720, 1280, t["name"].clone(), "wave", "LIVE · 00:30:00"),
+        ("sales-doctor-backstage", 1280, 720, t["alt_bts"].clone(), "grid", "CONCEPT v1"),
     ];
     let frames: String = t["nx"].as_array().unwrap().iter().zip(shots.iter()).enumerate().map(|(i, (title, (img, w, h, alt, kind, hud)))| format!(
-        "<figure class=\"shot\"><img loading=\"lazy\" decoding=\"async\" src=\"media/{img}\" alt=\"{}\" width=\"{w}\" height=\"{h}\"><span class=\"shot-fx {kind}\"></span><span class=\"shot-hud\"><i></i>{hud}</span><figcaption><b>{:02}</b><h3>{}</h3></figcaption></figure>",
-        esc(s(alt)), i + 1, esc(s(title)))).collect();
+        "<figure class=\"shot\">{}<span class=\"shot-fx {kind}\"></span><span class=\"shot-hud\"><i></i>{hud}</span><figcaption><b>{:02}</b><h3>{}</h3></figcaption></figure>",
+        picture(img, s(alt), *w, *h), i + 1, esc(s(title)))).collect();
     let shots_open = "<div class=\"shots\" id=\"shots\"><i class=\"shots-line\" aria-hidden=\"true\"><i id=\"shots-fill\"></i></i>";
     assert!(html.contains(shots_open), "template lost #shots");
     html = html.replacen(shots_open, &format!("{shots_open}{frames}"), 1);
