@@ -346,6 +346,8 @@ body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;
 .cc-n{position:absolute;z-index:1;top:12px;left:12px;font:600 .72rem/1 var(--f-mono);letter-spacing:.12em;color:var(--snow);padding:6px 8px;border-radius:6px;background:rgba(12,15,17,.72)}
 .cc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
 .cc-head h3{font:600 1.2rem/1.2 var(--f-mark);letter-spacing:-.01em;direction:ltr}
+.cc-head h3 a{text-decoration:none;transition:color .2s ease}
+.cc-head h3 a:hover,.cc-head h3 a:focus-visible{color:var(--tungsten)}
 .cat{display:block;color:var(--mist);font-size:.9rem;margin-top:4px}
 .pill{display:grid;gap:4px;justify-items:end;text-align:end;flex:none}
 .pill b{font:600 1.5rem/1 var(--f-mark);color:var(--tungsten);letter-spacing:-.02em;direction:ltr}

@@ -43,6 +43,9 @@ const qLang = new URLSearchParams(location.search).get("lang"), saved = store.ge
 const pageLang = window.ABM_LANG && window.ABM_LANG !== "en" ? window.ABM_LANG : null;
 if (pageLang && L[pageLang]) lang = pageLang; else if (qLang && L[qLang]) lang = qLang; else if (saved && L[saved]) lang = saved;
 const T = () => L[lang];
+/* the language page arrives with its sections already written (src/prerender.rs); on the first render the script
+   keeps those nodes and only wires them up, and builds from scratch only when the language changes */
+let firstPass = root.dataset.pre === lang;
 const LOCALE = { en: "en-US", es: "es-ES", ru: "ru-RU", ar: "ar-u-nu-latn" };
 const fmt = n => Math.round(n).toLocaleString(LOCALE[lang] || "en-US");
 const dec = x => String(Math.round(x * 10) / 10).replace(".", lang === "en" ? "." : ",");
@@ -198,6 +201,7 @@ function setHero(p){ sky.p = p; if (!sky.run && sky.draw) sky.draw(); }
 function renderHero(){
   const t = T();
   $("#h1").textContent = t.hero_tag;
+  if (firstPass && $("#line .lw")) return;
   const line = $("#line"); line.replaceChildren();
   t.hero_line.split("\n").forEach((ln, li) => {
     if (li) line.append(el("br"));
@@ -247,7 +251,7 @@ function sync(){
 
 /* ---------- manifesto ---------- */
 function renderManifest(){
-  const p = $("#mf"); p.replaceChildren();
+  const p = $("#mf"); if (firstPass && p.querySelector(".w")) return; p.replaceChildren();
   words(T().mf, /\*(.*?)\*/g).forEach((w, i) => { if (i) p.append(" "); p.append(el("span", "w" + (w.hl ? " hl" : ""), w.text)); });
 }
 
@@ -262,8 +266,8 @@ function storyVars(){
 const fillVars = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] != null ? v[k] : "");
 function renderStory(){
   const t = T(), v = storyVars();
-  const ol = $("#beats"); ol.replaceChildren();
-  t.s_steps.forEach(([h, p]) => { const li = el("li"); li.append(el("b", null, fillVars(h, v)), el("p", null, fillVars(p, v))); ol.append(li); });
+  const ol = $("#beats");
+  if (!(firstPass && ol.children.length)) { ol.replaceChildren(); t.s_steps.forEach(([h, p]) => { const li = el("li"); li.append(el("b", null, fillVars(h, v)), el("p", null, fillVars(p, v))); ol.append(li); }); }
   const cols = $("#cols"); cols.replaceChildren();
   t.j_stages.forEach((h, i) => {
     const c = el("div", "col"), bar = el("div", "bar"), f = el("i", "fill"); bar.append(f); c.style.gridColumn = String(i + 1);
@@ -556,8 +560,8 @@ function renderProcess(){
 /* ---------- 06 what we fix ---------- */
 let fixIO = null;
 function renderFixes(){
-  const ol = $("#fixlist"), hit = $$("#fixlist .fx.hit").length; ol.replaceChildren();
-  T().fixes.forEach(([a, b], i) => { const li = el("li", "fx" + (i < hit ? " hit" : "")); li.append(el("span", "fx-old", a), el("span", "fx-new", b)); ol.append(li); });
+  const ol = $("#fixlist"), hit = $$("#fixlist .fx.hit").length;
+  if (!(firstPass && ol.children.length)) { ol.replaceChildren(); T().fixes.forEach(([a, b], i) => { const li = el("li", "fx" + (i < hit ? " hit" : "")); li.append(el("span", "fx-old", a), el("span", "fx-new", b)); ol.append(li); }); }
   if (reduce || !("IntersectionObserver" in window)) { $$(".fx").forEach(x => x.classList.add("hit")); return; }
   if (!fixIO) fixIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("hit"); fixIO.unobserve(e.target); } }), { rootMargin: "0px 0px -32% 0px" });
   $$(".fx:not(.hit)").forEach(x => fixIO.observe(x));
@@ -623,20 +627,22 @@ function renderCases(){
     const media = el("button", "cc-media"); media.type = "button"; media.dataset.cursor = "play"; media.dataset.video = c.video;
     media.setAttribute("aria-label", t.open_case + ": " + c.client);
     /* "lazy" must be set before the address, or the photo downloads at once even far down the page */
-    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.src = MEDIA + c.video + ".jpg"; im.alt = "";
+    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.width = 1280; im.height = 720; im.src = MEDIA + c.video + ".jpg"; im.alt = t.alt_still.replace("{c}", c.client);
     const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.preload = "none";
     media.append(im, v, el("span", "cc-n", String(k + 1).padStart(2, "0")), el("span", "tc", c.dur + (c.bts ? " + " + c.bts.dur : "")));
     media.addEventListener("click", () => openRoom(i));
     const head = el("div", "cc-head"), l = el("div");
-    l.append(el("h3", null, c.client), el("span", "cat", t.cat[c.client])); head.append(l);
+    /* the film's name is a real link to its own page (work/<slug>/), so crawlers and new tabs reach it */
+    const h3 = el("h3"), a = el("a", null, c.client); a.href = ROOT + (lang === "en" ? "" : lang + "/") + "work/" + c.video + "/"; h3.append(a);
+    l.append(h3, el("span", "cat", t.cat[c.client])); head.append(l);
     if (big && m.views) { const pill = el("div", "pill"); pill.append(el("b", null, m.views), el("span", null, t.k_views)); head.append(pill); }
     card.append(media, head);
     if (big && m.result) card.append(el("p", "res", tr(m.result)));
     track.append(card);
   });
   setFilmsLabel();
-  const run = $("#run"); run.replaceChildren();
-  for (let r = 0; r < 2; r++) CASES.forEach(c => run.append(el("span", null, c.client)));
+  const run = $("#run");
+  if (!(firstPass && run.children.length)) { run.replaceChildren(); for (let r = 0; r < 2; r++) CASES.forEach(c => run.append(el("span", null, c.client))); }
   $("#run-sr").textContent = CASES.map(c => c.client).join(", ");
   bindPreviews();
 }
@@ -665,16 +671,16 @@ function bindPreviews(){
 
 /* ---------- what happens next: three big frames on one strip of film ---------- */
 const SHOTS = [
-  { img: MEDIA + "portrait.jpg", pos: "30% 72%", zoom: 1.35, hud: "READING", kind: "scan" },
-  { img: MEDIA + "abror-timessquare.jpg", pos: "50% 38%", zoom: 1.08, hud: "LIVE · 00:30:00", kind: "wave" },
-  { img: MEDIA + "sales-doctor-backstage.jpg", pos: "50% 45%", zoom: 1.15, hud: "CONCEPT v1", kind: "grid" }
+  { img: MEDIA + "portrait.jpg", w: 1024, h: 1024, pos: "30% 72%", zoom: 1.35, hud: "READING", kind: "scan" },
+  { img: MEDIA + "abror-timessquare.jpg", w: 720, h: 1280, pos: "50% 38%", zoom: 1.08, hud: "LIVE · 00:30:00", kind: "wave" },
+  { img: MEDIA + "sales-doctor-backstage.jpg", w: 1280, h: 720, pos: "50% 45%", zoom: 1.15, hud: "CONCEPT v1", kind: "grid" }
 ];
 function renderShots(t){
   const box = $("#shots"), lit = $$("#shots .shot.lit").length;
   box.querySelectorAll(".shot").forEach(n => n.remove());
   t.nx.forEach((title, i) => {
     const s = SHOTS[i], f = el("figure", "shot" + (i < lit ? " lit" : ""));
-    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.src = s.img; im.alt = i < 2 ? t.name : ""; im.style.objectPosition = s.pos; im.style.setProperty("--z", s.zoom);
+    const im = el("img"); im.loading = "lazy"; im.decoding = "async"; im.width = s.w; im.height = s.h; im.src = s.img; im.alt = i < 2 ? t.name : t.alt_bts; im.style.objectPosition = s.pos; im.style.setProperty("--z", s.zoom);
     const hud = el("span", "shot-hud"); hud.append(el("i"), document.createTextNode(s.hud));
     const fx = el("span", "shot-fx " + s.kind, null);
     if (s.kind === "wave") for (let k = 0; k < 18; k++) { const b = el("i"); b.style.setProperty("--k", k); fx.append(b); }
@@ -747,8 +753,8 @@ function render(){
   renderCases();
   renderFixes();
 
-  const rs = $("#reasons"); rs.replaceChildren(); rs.classList.add("rv-c");
-  t.why.forEach((h, i) => { const li = el("li"); li.append(icon(WHY_IC[i]), el("span", null, h)); rs.append(li); });
+  const rs = $("#reasons"); rs.classList.add("rv-c");
+  if (!(firstPass && rs.children.length)) { rs.replaceChildren(); t.why.forEach((h, i) => { const li = el("li"); li.append(icon(WHY_IC[i]), el("span", null, h)); rs.append(li); }); }
 
   renderProcess();
   renderBuilder();
@@ -759,8 +765,8 @@ function render(){
   $$(".err[data-k], #send-err[data-k]").forEach(n => { if (!n.hidden) n.textContent = t[n.dataset.k]; });
   if (!$("#done").hidden) $("#done-msg").textContent = t.ok.replace("{n}", lastName);
 
-  const fq = $("#faqlist"); fq.replaceChildren(); fq.classList.add("rv-c");
-  t.faq.forEach(([q, a]) => { const d = el("details"); d.append(el("summary", null, q), el("p", null, a)); fq.append(d); });
+  const fq = $("#faqlist"); fq.classList.add("rv-c");
+  if (!(firstPass && fq.children.length)) { fq.replaceChildren(); t.faq.forEach(([q, a]) => { const d = el("details"); d.append(el("summary", null, q), el("p", null, a)); fq.append(d); }); }
 
   const ct = $("#contacts"); ct.replaceChildren();
   const cv = DATA.contacts;
@@ -776,6 +782,7 @@ function render(){
   fillRoom();
   bindReveals();
   if (M()) M().refresh();
+  firstPass = false;
 }
 
 function setScene(id){

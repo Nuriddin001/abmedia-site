@@ -18,7 +18,7 @@ const L = {
    "FAQ"
   ],
   "cta": "Free business audit",
-  "hero_tag": "Production, storytelling and go-to-market campaigns for awareness and trust",
+  "hero_tag": "Video production and brand films that build awareness and trust",
   "hero_cta": "Free business audit",
   "hero_line": "Be known.\nBe trusted.",
   "cue": "Scroll to play",
@@ -317,6 +317,8 @@ const L = {
   "v_bts": "Backstage",
   "close": "Close",
   "alt_p": "Abror Bakhtiyarovich on Wall Street, New York",
+  "alt_still": "Still from the {c} film",
+  "alt_bts": "Behind the scenes of the Sales Doctor Academy shoot",
   "scene_l": "Scene",
   "scene": {
    "top": "Opening",
@@ -346,7 +348,7 @@ const L = {
    "Preguntas"
   ],
   "cta": "Auditoría de negocio gratis",
-  "hero_tag": "Producción, storytelling y campañas go-to-market para notoriedad y confianza",
+  "hero_tag": "Productora de vídeo: películas de marca que generan notoriedad y confianza",
   "hero_cta": "Auditoría de negocio gratis",
   "hero_line": "Que te conozcan.\nQue confíen en ti.",
   "cue": "Desplázate para ver",
@@ -645,6 +647,8 @@ const L = {
   "v_bts": "Detrás de cámaras",
   "close": "Cerrar",
   "alt_p": "Abror Bakhtiyarovich en Wall Street, Nueva York",
+  "alt_still": "Fotograma del vídeo de {c}",
+  "alt_bts": "Detrás de cámaras del rodaje de Sales Doctor Academy",
   "scene_l": "Escena",
   "scene": {
    "top": "Apertura",
@@ -674,7 +678,7 @@ const L = {
    "Вопросы"
   ],
   "cta": "Бесплатный бизнес-аудит",
-  "hero_tag": "Продакшн, сторителлинг и кампании go-to-market для узнаваемости и доверия",
+  "hero_tag": "Видеопродакшн: имиджевые ролики, которые дают узнаваемость и доверие",
   "hero_cta": "Бесплатный бизнес-аудит",
   "hero_line": "Вас узнают.\nВам доверяют.",
   "cue": "Листайте, чтобы смотреть",
@@ -973,6 +977,8 @@ const L = {
   "v_bts": "Бэкстейдж",
   "close": "Закрыть",
   "alt_p": "Аброр Бахтиярович на Уолл-стрит, Нью-Йорк",
+  "alt_still": "Кадр из ролика {c}",
+  "alt_bts": "Бэкстейдж съёмок Sales Doctor Academy",
   "scene_l": "Сцена",
   "scene": {
    "top": "Вступление",
@@ -1002,7 +1008,7 @@ const L = {
    "الأسئلة"
   ],
   "cta": "تدقيق أعمال مجاني",
-  "hero_tag": "الإنتاج وسرد القصص وحملات الدخول إلى السوق للشهرة والثقة",
+  "hero_tag": "إنتاج فيديو وأفلام للعلامات التجارية تبني الشهرة والثقة",
   "hero_cta": "تدقيق أعمال مجاني",
   "hero_line": "ليعرفوك.\nوليثقوا بك.",
   "cue": "مرّر للتشغيل",
@@ -1301,6 +1307,8 @@ const L = {
   "v_bts": "الكواليس",
   "close": "إغلاق",
   "alt_p": "أبرور بختياروفيتش في وول ستريت، نيويورك",
+  "alt_still": "لقطة من فيلم {c}",
+  "alt_bts": "كواليس تصوير Sales Doctor Academy",
   "scene_l": "مشهد",
   "scene": {
    "top": "الافتتاح",

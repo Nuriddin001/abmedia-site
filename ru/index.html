@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" dir="ltr">
+<html lang="ru" dir="ltr" data-pre="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -42,7 +42,7 @@
 <!-- fonts never hold the page back: it paints at once and the fonts swap in when they arrive -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Noto+Kufi+Arabic:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Noto+Kufi+Arabic:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="../static/style.css?v=1c1f4bda">
+<link rel="stylesheet" href="../static/style.css?v=bdf65e0b">
 <script>document.documentElement.classList.add("js");</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ru","mainEntity":[{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Бесплатный 30-минутный звонок. Находим, где теряются клиенты — узнаваемость, доверие или покупка — и что запускать первым."},"name":"Что такое бизнес-аудит?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Да, мы продакшн-студия. Сами снимаем видео и создаём контент, а вокруг них строим историю и кампанию go-to-market."},"name":"Вы снимаете фильмы?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Вывод продукта к покупателям: позиционирование, история, каналы, запуск и ведение кампании."},"name":"Что значит go-to-market?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Да, но своя команда не обязательна: мы подключаем свою команду и делаем контент сами. Если у вас есть команда или агентство, мы подключаемся и работаем вместе с ними."},"name":"Работаете с нашей командой или агентством?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Короткий опрос аудитории до и после запуска, плюс охват, досматриваемость и брендовые запросы."},"name":"Как вы измеряете доверие?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Зависит от рынка, каналов и контента. Бюджет назовём после звонка-аудита."},"name":"Сколько это стоит?"}]}</script>
 </head>
@@ -74,7 +74,7 @@
   <div class="wrap">
     <a class="logo" href="#top" aria-label="AB Media"><i aria-hidden="true"></i>AB MEDIA</a>
     <span class="scene" id="scene" aria-hidden="true"><b id="scene-n">01</b><span id="scene-t"></span></span>
-    <nav class="nav" id="nav" aria-label="Sections"><a href="#journey"></a><a href="#cases"></a><a href="#how"></a><a href="#faq"></a></nav>
+    <nav class="nav" id="nav" aria-label="Sections"><a href="#journey">Путь клиента</a><a href="#cases">Работы</a><a href="#how">Процесс</a><a href="#faq">Вопросы</a></nav>
     <div class="langs" role="group" aria-label="Language"><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="ar">AR</button></div>
     <a class="btn btn-t btn-sm" href="#request" data-i="hero_cta">Бесплатный бизнес-аудит</a>
     <div class="theme" role="group" aria-label="Light or dark"><button type="button" data-theme-set="light" aria-label="Light"><svg class="ic" aria-hidden="true"><use href="#i-sun"/></svg></button><button type="button" data-theme-set="dark" aria-label="Dark"><svg class="ic" aria-hidden="true"><use href="#i-moon"/></svg></button></div>
@@ -97,14 +97,13 @@
           <span class="hud h-tr">TC <b id="tc">00:00:00:00</b></span>
           <span class="hud h-br">4K · 25 FPS · 2.39 : 1</span>
         </div>
-        <button class="reel-tag" type="button" id="reel-tag"><small data-i="reel_now">В кадре</small><b id="reel-name"></b><span id="reel-meta"></span></button>
+        <button class="reel-tag" type="button" id="reel-tag"><small data-i="reel_now">В кадре</small><b id="reel-name">Good Day Cappuccino</b><span id="reel-meta">0:45</span></button>
         <div class="segs" id="segs" aria-hidden="true"></div>
       </div>
       <div class="mark" aria-hidden="true"><span class="m-l"><b>AB</b></span><span class="m-r"><b>MEDIA</b></span></div>
-      <h1 class="sr" id="h1">Продакшн, сторителлинг и кампании go-to-market для узнаваемости и доверия</h1>
-      <p class="line" id="line" aria-hidden="true"></p>
+      <p class="line" id="line" aria-hidden="true"><span class="lw">Вас</span> <span class="lw">узнают.</span><br><span class="lw hl">Вам</span> <span class="lw hl">доверяют.</span></p>
       <div class="hero-foot">
-        <p class="tag" data-i="hero_q">Почему 88 из 100 забывают вашу рекламу?</p>
+        <h1 class="tag" id="h1">Видеопродакшн: имиджевые ролики, которые дают узнаваемость и доверие</h1>
         <div class="cue" aria-hidden="true"><span data-i="cue">Листайте, чтобы смотреть</span><i></i></div>
       </div>
     </div>
@@ -112,7 +111,7 @@
 
   <!-- 02 manifesto -->
   <section class="manifest" id="manifest" data-scene="manifest">
-    <div class="wrap mf-in"><span class="eb" data-i="mf_eb">Манифест</span><p class="mf" id="mf"></p></div>
+    <div class="wrap mf-in"><span class="eb" data-i="mf_eb">Манифест</span><p class="mf" id="mf"><span class="w hl">88</span> <span class="w hl">из</span> <span class="w hl">100</span> <span class="w">забывают</span> <span class="w">вашу</span> <span class="w">рекламу.</span> <span class="w">Мы</span> <span class="w">делаем</span> <span class="w">так,</span> <span class="w">чтобы</span> <span class="w">вас</span> <span class="w hl">помнили,</span> <span class="w">а</span> <span class="w">потом</span> <span class="w hl">доверяли.</span></p></div>
   </section>
 
 
@@ -123,7 +122,7 @@
         <div class="story-text">
           <span class="eb" data-i="j_eb">Путь клиента</span>
           <h2 data-i="j_h">Где бренды теряют клиентов</h2>
-          <ol class="beats" id="beats"></ol>
+          <ol class="beats" id="beats"><li><b>100 000 увидели рекламу</b><p>Увидеть — не значит узнать.</p></li><li><b>88 000 вас забыли</b><p>Бренд помнят только 12 000.</p></li><li><b>74% не доверяют</b><p>3 100 доверяют. 900 покупают.</p></li><li><b>Кампания с историей это меняет</b><p>21 000 узнают · 6 400 доверяют · 1 800 покупают</p></li></ol>
         </div>
         <div class="story-vis">
           <div class="funnel" id="funnel">
@@ -135,7 +134,7 @@
     </div>
     <div class="wrap calc">
       <div class="calc-head"><h3 class="calc-h" data-i="calc_h">Ваши цифры</h3>
-        <div class="seg" role="group" id="jmode"><button type="button" data-m="0"></button><button type="button" data-m="1"></button></div></div>
+        <div class="seg" role="group" id="jmode"><button type="button" data-m="0" aria-pressed="true">Ведём мы</button><button type="button" data-m="1" aria-pressed="false">С вашей командой</button></div></div>
       <div class="reach"><label for="reach"><span data-i="c_reach">Рекламный охват в месяц</span><output id="reach-o" for="reach"></output></label><input type="range" id="reach"></div>
       <div class="jstages" id="jstages" aria-live="polite"></div>
       <div class="jsum"><p id="jsum"></p><button class="btn btn-t mag" type="button" id="jsend"><span data-i="c_cta">Отправить с этим расчётом</span><svg class="ic"><use href="#i-arrow"/></svg></button></div>
@@ -160,11 +159,11 @@
 
   <!-- 05 films -->
   <section class="cases" id="cases" data-scene="cases">
-    <div class="strip"><div class="run" id="run" aria-hidden="true"></div><p class="sr" id="run-sr"></p></div>
+    <div class="strip"><div class="run" id="run" aria-hidden="true"><span>Sales Doctor Academy</span><span>Grand Capital</span><span>Yuksalish Choy</span><span>IMZO</span><span>Good Day Cappuccino</span><span>ZO'R TV</span><span>To'xtaniyoz Ota</span><span>Sales Doctor Academy</span><span>Grand Capital</span><span>Yuksalish Choy</span><span>IMZO</span><span>Good Day Cappuccino</span><span>ZO'R TV</span><span>To'xtaniyoz Ota</span></div><p class="sr" id="run-sr">Sales Doctor Academy, Grand Capital, Yuksalish Choy, IMZO, Good Day Cappuccino, ZO'R TV, To'xtaniyoz Ota</p></div>
     <div class="wrap films">
       <div class="sh rv"><span class="eb" data-i="cs_eb">Работы</span><h2 data-i="cs_h">Истории, которые мы рассказали</h2></div>
-      <div class="track" id="track"></div>
-      <button class="more-btn" id="more-btn" type="button" aria-expanded="false" aria-controls="track"><span id="more-lbl"></span><b id="more-n"></b><i aria-hidden="true"></i></button>
+      <div class="track" id="track"><article class="cc big"><button class="cc-media" type="button" data-cursor="play" data-video="good-day" aria-label="Открыть кейс: Good Day Cappuccino"><img loading="lazy" decoding="async" src="../media/good-day.jpg" alt="Кадр из ролика Good Day Cappuccino" width="1280" height="720"><video muted loop playsinline preload="none"></video><span class="cc-n">01</span><span class="tc">0:45</span></button><div class="cc-head"><div><h3><a href="work/good-day/">Good Day Cappuccino</a></h3><span class="cat">Кофейный напиток</span></div></div></article><article class="cc big"><button class="cc-media" type="button" data-cursor="play" data-video="sales-doctor" aria-label="Открыть кейс: Sales Doctor Academy"><img loading="lazy" decoding="async" src="../media/sales-doctor.jpg" alt="Кадр из ролика Sales Doctor Academy" width="1280" height="720"><video muted loop playsinline preload="none"></video><span class="cc-n">02</span><span class="tc">1:50 + 1:41</span></button><div class="cc-head"><div><h3><a href="work/sales-doctor/">Sales Doctor Academy</a></h3><span class="cat">Бизнес-образование</span></div></div></article><article class="cc extra"><button class="cc-media" type="button" data-cursor="play" data-video="grand-capital" aria-label="Открыть кейс: Grand Capital"><img loading="lazy" decoding="async" src="../media/grand-capital.jpg" alt="Кадр из ролика Grand Capital" width="1280" height="720"><video muted loop playsinline preload="none"></video><span class="cc-n">03</span><span class="tc">1:24</span></button><div class="cc-head"><div><h3><a href="work/grand-capital/">Grand Capital</a></h3><span class="cat">Недвижимость</span></div></div></article><article class="cc extra"><button class="cc-media" type="button" data-cursor="play" data-video="yuksalish" aria-label="Открыть кейс: Yuksalish Choy"><img loading="lazy" decoding="async" src="../media/yuksalish.jpg" alt="Кадр из ролика Yuksalish Choy" width="1280" height="720"><video muted loop playsinline preload="none"></video><span class="cc-n">04</span><span class="tc">0:33</span></button><div class="cc-head"><div><h3><a href="work/yuksalish/">Yuksalish Choy</a></h3><span class="cat">Чай</span></div></div></article><article class="cc extra"><button class="cc-media" type="button" data-cursor="play" data-video="imzo" aria-label="Открыть кейс: IMZO"><img loading="lazy" decoding="async" src="../media/imzo.jpg" alt="Кадр из ролика IMZO" width="1280" height="720"><video muted loop playsinline preload="none"></video><span class="cc-n">05</span><span class="tc">1:11</span></button><div class="cc-head"><div><h3><a href="work/imzo/">IMZO</a></h3><span class="cat">Дверные коробки</span></div></div></article><article class="cc extra"><button class="cc-media" type="button" data-cursor="play" data-video="zor-tv" aria-label="Открыть кейс: ZO'R TV"><img loading="lazy" decoding="async" src="../media/zor-tv.jpg" alt="Кадр из ролика ZO'R TV" width="1280" height="720"><video muted loop playsinline preload="none"></video><span class="cc-n">06</span><span class="tc">2:05</span></button><div class="cc-head"><div><h3><a href="work/zor-tv/">ZO'R TV</a></h3><span class="cat">Телеканал</span></div></div></article><article class="cc extra"><button class="cc-media" type="button" data-cursor="play" data-video="toxtaniyoz" aria-label="Открыть кейс: To'xtaniyoz Ota"><img loading="lazy" decoding="async" src="../media/toxtaniyoz.jpg" alt="Кадр из ролика To'xtaniyoz Ota" width="1280" height="720"><video muted loop playsinline preload="none"></video><span class="cc-n">07</span><span class="tc">0:34</span></button><div class="cc-head"><div><h3><a href="work/toxtaniyoz/">To'xtaniyoz Ota</a></h3><span class="cat">Мясная продукция</span></div></div></article></div>
+      <button class="more-btn" id="more-btn" type="button" aria-expanded="false" aria-controls="track"><span id="more-lbl">Ещё видео</span><b id="more-n">+5</b><i aria-hidden="true"></i></button>
     </div>
   </section>
 
@@ -172,7 +171,7 @@
   <section class="band" id="fixes" data-scene="fixes">
     <div class="wrap">
       <div class="sh sh-1 rv"><span class="eb" data-i="f_eb">Что мы исправляем</span><h2 data-i="f_h">Другие оставляют как есть. Мы исправляем.</h2></div>
-      <ol class="fixes" id="fixlist"></ol>
+      <ol class="fixes" id="fixlist"><li class="fx"><span class="fx-old">Бренд никто не помнит</span><span class="fx-new">История, которая есть только у вас</span></li><li class="fx"><span class="fx-old">Лиды всё дороже</span><span class="fx-new">Доверие удешевляет рекламу</span></li><li class="fx"><span class="fx-old">Контент без плана</span><span class="fx-new">Каждый материал работает на одну историю</span></li><li class="fx"><span class="fx-old">Пять подрядчиков, ответственного нет</span><span class="fx-new">Одна команда от истории до рынка</span></li><li class="fx"><span class="fx-old">Запустили и забыли</span><span class="fx-new">Ведём кампанию, а не только запуск</span></li><li class="fx"><span class="fx-old">Результат не измерить</span><span class="fx-new">Замеряем узнаваемость до и после</span></li></ol>
     </div>
   </section>
 
@@ -182,7 +181,7 @@
       <figure class="why-ph" id="why-ph"><img src="../media/abror-wallstreet.jpg" alt="Abror Bakhtiyarovich, AB Media" id="why-img" width="720" height="1280" loading="lazy"><figcaption><b data-i="name">Аброр Бахтиярович</b><span data-i="role">Продакшн, сторителлинг и go-to-market, AB Media</span></figcaption></figure>
       <div class="why-r">
         <div class="sh sh-1 rv"><span class="eb" data-i="why_eb">Почему Аброр</span><h2 data-i="why_h">Одна команда. От истории до рынка.</h2></div>
-        <ul class="reasons" id="reasons"></ul>
+        <ul class="reasons rv-c" id="reasons"><li><svg class="ic" aria-hidden="true"><use href="#i-reel"></use></svg><span>История, запуск и кампания в одних руках</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-clap"></use></svg><span>Истории для Good Day, Sales Doctor и Yuksalish</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-link"></use></svg><span>Работает с вашей командой или агентством</span></li><li><svg class="ic" aria-hidden="true"><use href="#i-target"></use></svg><span>Работает на узнаваемость и доверие</span></li></ul>
       </div>
     </div>
   </section>
@@ -192,8 +191,8 @@
     <div class="wrap">
       <div class="sh rv"><span class="eb" data-i="how_eb">Процесс</span><h2 data-i="how_h">От аудита до рынка</h2></div>
       <div class="seg modes" role="group" id="modes"><button type="button" data-m="0"></button><button type="button" data-m="1"></button></div>
-      <p class="mode-d" id="mode-d"></p>
-      <div class="tl" id="tl"><i class="tl-line" aria-hidden="true"><i id="tl-fill"></i></i><ol class="steps" id="steps"></ol></div>
+      <p class="mode-d" id="mode-d">От аудита до рынка — и поддерживаем кампанию дальше.</p>
+      <div class="tl" id="tl"><i class="tl-line" aria-hidden="true"><i id="tl-fill"></i></i><ol class="steps" id="steps"><li class="step"><span class="n">01</span><div class="step-t"><h3>Бизнес-аудит</h3><p>Где и почему теряются клиенты</p></div><span class="chip full">AB Media</span></li><li class="step"><span class="n">02</span><div class="step-t"><h3>Позиционирование</h3><p>То, что можете сказать только вы</p></div><span class="chip full">AB Media</span></li><li class="step"><span class="n">03</span><div class="step-t"><h3>Сторителлинг</h3><p>История, которую помнят и пересказывают</p></div><span class="chip full">AB Media</span></li><li class="step"><span class="n">04</span><div class="step-t"><h3>Контент</h3><p>Видео, рилсы и посты, которые её рассказывают</p></div><span class="chip full">AB Media</span></li><li class="step"><span class="n">05</span><div class="step-t"><h3>Go-to-market</h3><p>Запуск в каналах ваших покупателей</p></div><span class="chip full">AB Media</span></li><li class="step"><span class="n">06</span><div class="step-t"><h3>Ведение и замер</h3><p>Ведём кампанию и измеряем узнаваемость и доверие</p></div><span class="chip full">AB Media</span></li></ol></div>
     </div>
   </section>
 
@@ -202,7 +201,7 @@
     <div class="wrap">
       <div class="sh sh-1 rv"><span class="eb" data-i="b_eb">Планировщик</span><h2 data-i="b_h">Спланируйте запуск за 30 секунд</h2></div>
       <div class="builder rv">
-        <form class="bq" id="bq"></form>
+        <form class="bq" id="bq"><fieldset><legend><b>1</b>Где теряете клиентов?</legend><div class="opts"><input type="radio" name="b-goal" id="b-goal-launch" value="launch"><label for="b-goal-launch">Нас не знают</label><input type="radio" name="b-goal" id="b-goal-trust" value="trust" checked><label for="b-goal-trust">Нам не доверяют</label><input type="radio" name="b-goal" id="b-goal-explain" value="explain"><label for="b-goal-explain">Не понимают, что мы делаем</label><input type="radio" name="b-goal" id="b-goal-social" value="social"><label for="b-goal-social">Социальный посыл</label></div></fieldset><fieldset><legend><b>2</b>Что у вас есть?</legend><div class="opts"><input type="radio" name="b-have" id="b-have-task" value="task" checked><label for="b-have-task">Только цель</label><input type="radio" name="b-have" id="b-have-idea" value="idea"><label for="b-have-idea">Идея</label><input type="radio" name="b-have" id="b-have-agency" value="agency"><label for="b-have-agency">Своя контент-команда</label></div></fieldset><fieldset><legend><b>3</b>Ведём кампанию вместе?</legend><div class="opts"><input type="radio" name="b-dist" id="b-dist-yes" value="yes" checked><label for="b-dist-yes">Да, ведите</label><input type="radio" name="b-dist" id="b-dist-no" value="no"><label for="b-dist-no">Нет, ведём сами</label></div></fieldset></form>
         <div class="bres" id="bres" aria-live="polite"></div>
       </div>
     </div>
@@ -212,7 +211,7 @@
   <section class="band" id="request" data-scene="request">
     <div class="wrap rq">
       <div class="sh sh-1 rv"><span class="eb" data-i="rq_eb">Бесплатный бизнес-аудит</span><h2 data-i="rq_h">Давайте запустим вашу историю</h2><p data-i="rq_p">Оставьте контакты. Аброр перезвонит.</p></div>
-      <div class="rq-next"><p class="nx-h" data-i="nx_h">Что дальше</p><div class="shots" id="shots"><i class="shots-line" aria-hidden="true"><i id="shots-fill"></i></i></div></div>
+      <div class="rq-next"><p class="nx-h" data-i="nx_h">Что дальше</p><div class="shots" id="shots"><i class="shots-line" aria-hidden="true"><i id="shots-fill"></i></i><figure class="shot"><img loading="lazy" decoding="async" src="../media/portrait.jpg" alt="Аброр Бахтиярович" width="1024" height="1024"><span class="shot-fx scan"></span><span class="shot-hud"><i></i>READING</span><figcaption><b>01</b><h3>Аброр читает заявку</h3></figcaption></figure><figure class="shot"><img loading="lazy" decoding="async" src="../media/abror-timessquare.jpg" alt="Аброр Бахтиярович" width="720" height="1280"><span class="shot-fx wave"></span><span class="shot-hud"><i></i>LIVE · 00:30:00</span><figcaption><b>02</b><h3>30-минутный звонок: бизнес-аудит</h3></figcaption></figure><figure class="shot"><img loading="lazy" decoding="async" src="../media/sales-doctor-backstage.jpg" alt="Бэкстейдж съёмок Sales Doctor Academy" width="1280" height="720"><span class="shot-fx grid"></span><span class="shot-hud"><i></i>CONCEPT v1</span><figcaption><b>03</b><h3>Концепция + бюджет</h3></figcaption></figure></div></div>
       <div class="rq-slate">
         <button class="slate" type="button" id="slate" aria-label="Clap">
           <span class="slate-stick"></span>
@@ -249,7 +248,7 @@
   <div class="wrap">
     <div class="fm" id="fm" aria-label="AB Media"><i aria-hidden="true"></i></div>
     <p class="foot-t" data-i="foot">Продакшн, сторителлинг и go-to-market для узнаваемости и доверия.</p>
-    <div class="contacts" id="contacts"></div>
+    <div class="contacts" id="contacts"><a class="ct" href="tel:+19296524542"><span>Телефон</span><b>+1 929 652 4542</b></a><a class="ct" href="https://t.me/abror_bakhtiyarovich_russia" target="_blank" rel="noopener"><span>Telegram</span><b>@abror_bakhtiyarovich_russia</b></a><a class="ct" href="https://www.instagram.com/abror_bakhtiyarovich_russia/" target="_blank" rel="noopener"><span>Instagram</span><b>@abror_bakhtiyarovich_russia</b></a><a class="ct" href="https://www.youtube.com/@abrorbaxtiyarovich" target="_blank" rel="noopener"><span>YouTube</span><b>@abrorbaxtiyarovich</b></a></div>
     <nav class="films-nav" aria-label="Работы"><span>Работы</span><a href="work/sales-doctor/">Sales Doctor Academy</a><a href="work/grand-capital/">Grand Capital</a><a href="work/yuksalish/">Yuksalish Choy</a><a href="work/imzo/">IMZO</a><a href="work/good-day/">Good Day Cappuccino</a><a href="work/zor-tv/">ZO'R TV</a><a href="work/toxtaniyoz/">To'xtaniyoz Ota</a></nav>
     <div class="legal"><span>© 2026 AB Media</span><span data-i="name">Аброр Бахтиярович</span></div>
   </div>
@@ -269,8 +268,8 @@
 <script src="../static/vendor/gsap.min.js"></script>
 <script src="../static/vendor/ScrollTrigger.min.js"></script>
 <script src="../static/vendor/lenis.min.js"></script>
-<script src="../static/i18n.js?v=064f8866"></script>
+<script src="../static/i18n.js?v=37eaaac1"></script>
 <script src="../static/motion.js?v=290f4e04"></script>
-<script src="../static/app.js?v=986f29ea"></script>
+<script src="../static/app.js?v=1ad18a0b"></script>
 </body>
 </html>

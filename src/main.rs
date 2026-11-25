@@ -13,6 +13,7 @@ mod config;
 mod content;
 mod leads;
 mod films;
+mod prerender;
 mod seo;
 
 use axum::{

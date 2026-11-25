@@ -26,6 +26,11 @@ pub fn films() -> Vec<Film> {
     block("CASES", "[", "]").as_array().unwrap().iter().map(|c| Film { slug: c["video"].as_str().unwrap().to_string(), data: c.clone() }).collect()
 }
 
+/// The films as written in i18n.js (for the cards on the main page).
+pub fn cases_json() -> Value {
+    block("CASES", "[", "]")
+}
+
 pub fn film_url(lang: &str, slug: &str) -> String {
     format!("{}work/{slug}/", page_url(lang))
 }

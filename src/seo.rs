@@ -159,7 +159,10 @@ pub fn localize(page: &str, lang: &str, site: &SiteData) -> String {
     let mut html = page
         .replacen("<html lang=\"en\" dir=\"ltr\">", &format!("<html lang=\"{lang}\" dir=\"{dir}\">"), 1)
         .replacen(HEAD_SLOT, &head(lang, site), 1)
-        .replacen("<h1 class=\"sr\" id=\"h1\"></h1>", &format!("<h1 class=\"sr\" id=\"h1\">{}</h1>", esc(t["hero_tag"].as_str().unwrap_or(""))), 1);
+        .replacen("<h1 class=\"tag\" id=\"h1\"></h1>", &format!("<h1 class=\"tag\" id=\"h1\">{}</h1>", esc(t["hero_tag"].as_str().unwrap_or(""))), 1);
+    // every section the script builds, already in the HTML (see prerender.rs); data-pre tells the script which language it is
+    html = html.replacen(&format!("<html lang=\"{lang}\" dir=\"{dir}\">"), &format!("<html lang=\"{lang}\" dir=\"{dir}\" data-pre=\"{lang}\">"), 1);
+    html = crate::prerender::sections(html, lang, t, &crate::films::cases_json(), site);
     html = fill_texts(&html, t);
     html = html.replacen("<!--__FILMS__-->", &crate::films::footer_links(lang), 1);
     // The questions and answers: visible in the HTML (the script rebuilds the same list) and as FAQPage data
@@ -237,7 +240,10 @@ mod tests {
     fn russian_page_points_back_to_the_root_assets() {
         let page = crate::render_page(&serde_json::to_string(&crate::content::site()).unwrap(), true);
         let ru = localize(&page, "ru", &crate::content::site());
-        assert!(ru.contains("<html lang=\"ru\" dir=\"ltr\">"));
+        assert!(ru.contains("<html lang=\"ru\" dir=\"ltr\" data-pre=\"ru\">"));
+        assert!(ru.contains("<a href=\"#journey\">") && !ru.contains("<a href=\"#journey\"></a>"));
+        assert!(ru.contains("<h3><a href=\"work/good-day/\">Good Day Cappuccino</a></h3>"));
+        assert!(ru.contains("<h1 class=\"tag\" id=\"h1\">Видеопродакшн"));
         assert!(ru.contains("\"../static/app.js"));
         assert!(ru.contains(&format!("hreflang=\"ar\" href=\"{SITE_URL}ar/\"")));
         assert!(ru.contains(&format!("<link rel=\"canonical\" href=\"{SITE_URL}ru/\">")));
