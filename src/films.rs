@@ -46,13 +46,13 @@ pub fn video_ld(lang: &str, film: &Film) -> Value {
     json!({
         "@context": "https://schema.org", "@type": "VideoObject",
         "@id": format!("{}#video", film_url(lang, &film.slug)),
-        "name": format!("{client} — {}", kind(lang)), "description": format!("{concept} {task}"),
+        "name": format!("{client} — {}", crate::film_copy::service(&film.slug, lang)), "description": format!("{concept} {task}"),
         "thumbnailUrl": [format!("{SITE_URL}media/{}.jpg", film.slug), format!("{SITE_URL}media/{}.webp", film.slug)],
         "contentUrl": format!("{SITE_URL}media/{}.mp4", film.slug),
         "embedUrl": film_url(lang, &film.slug),
         "uploadDate": PUBLISHED, "duration": iso_duration(c["dur"].as_str().unwrap_or("")),
         "inLanguage": lang, "productionCompany": { "@type": "Organization", "name": c["exec"] },
-        "creator": { "@id": crate::seo::org_id() }
+        "creator": { "@type": "Organization", "@id": crate::seo::org_id(), "name": "AB Media" }
     })
 }
 
@@ -62,10 +62,6 @@ pub fn film_url(lang: &str, slug: &str) -> String {
 
 fn esc(s: &str) -> String {
     s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace('"', "&quot;")
-}
-
-fn kind(lang: &str) -> &'static str {
-    match lang { "es" => "vídeo de marca", "ru" => "рекламный ролик", "ar" => "فيلم إعلاني", _ => "brand film" }
 }
 
 /// Section headings and the sentences built from the film's facts, per language.
