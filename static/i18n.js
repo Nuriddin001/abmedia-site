@@ -85,7 +85,7 @@ const L = {
   "k_views": "views",
   "open_case": "Open case",
   "more": "+{n} more projects. On the call we'll show work from your industry.",
-  "f_eb": "What we fix",
+  "f_eb": "The fix",
   "f_h": "Others leave it. We fix it.",
   "fixes": [
    [
@@ -113,7 +113,7 @@ const L = {
     "Awareness measured before and after"
    ]
   ],
-  "why_eb": "Why Abror",
+  "why_eb": "Behind the camera",
   "why_h": "One team. From story to market.",
   "why": [
    "Story, launch and campaign under one roof",
@@ -326,7 +326,7 @@ const L = {
    "journey": "Journey",
    "diff": "Ads vs story",
    "cases": "Work",
-   "fixes": "What we fix",
+   "fixes": "The fix",
    "why": "Abror",
    "how": "Process",
    "plan": "Planner",
@@ -415,7 +415,7 @@ const L = {
   "k_views": "vistas",
   "open_case": "Ver caso",
   "more": "+{n} proyectos más. En la llamada te mostramos trabajos de tu sector.",
-  "f_eb": "Lo que arreglamos",
+  "f_eb": "La solución",
   "f_h": "Otros lo dejan así. Nosotros lo arreglamos.",
   "fixes": [
    [
@@ -443,7 +443,7 @@ const L = {
     "Notoriedad medida antes y después"
    ]
   ],
-  "why_eb": "Por qué Abror",
+  "why_eb": "Detrás de la cámara",
   "why_h": "Un equipo. De la historia al mercado.",
   "why": [
    "Historia, lanzamiento y campaña en manos de un solo equipo",
@@ -656,7 +656,7 @@ const L = {
    "journey": "Recorrido",
    "diff": "Anuncios vs historia",
    "cases": "Trabajos",
-   "fixes": "Lo que arreglamos",
+   "fixes": "La solución",
    "why": "Abror",
    "how": "Proceso",
    "plan": "Planificador",
@@ -745,7 +745,7 @@ const L = {
   "k_views": "просмотров",
   "open_case": "Открыть кейс",
   "more": "Ещё +{n} проектов. На звонке покажем работы из вашей отрасли.",
-  "f_eb": "Что мы исправляем",
+  "f_eb": "Решение",
   "f_h": "Другие оставляют как есть. Мы исправляем.",
   "fixes": [
    [
@@ -773,7 +773,7 @@ const L = {
     "Замеряем узнаваемость до и после"
    ]
   ],
-  "why_eb": "Почему Аброр",
+  "why_eb": "За камерой",
   "why_h": "Одна команда. От истории до рынка.",
   "why": [
    "История, запуск и кампания в одних руках",
@@ -986,7 +986,7 @@ const L = {
    "journey": "Путь клиента",
    "diff": "Реклама и история",
    "cases": "Работы",
-   "fixes": "Что исправляем",
+   "fixes": "Решение",
    "why": "Аброр",
    "how": "Процесс",
    "plan": "Планировщик",
@@ -1075,7 +1075,7 @@ const L = {
   "k_views": "مشاهدة",
   "open_case": "اعرض العمل",
   "more": "+{n} مشروعًا آخر. في المكالمة نعرض أعمالًا من مجالك.",
-  "f_eb": "ما نصلحه",
+  "f_eb": "الحل",
   "f_h": "غيرنا يتركه. نحن نصلحه.",
   "fixes": [
    [
@@ -1103,7 +1103,7 @@ const L = {
     "نقيس الشهرة قبل وبعد"
    ]
   ],
-  "why_eb": "لماذا أبرور",
+  "why_eb": "خلف الكاميرا",
   "why_h": "فريق واحد. من القصة إلى السوق.",
   "why": [
    "القصة والإطلاق والحملة تحت إدارة واحدة",
@@ -1316,7 +1316,7 @@ const L = {
    "journey": "رحلة العميل",
    "diff": "الإعلان والقصة",
    "cases": "أعمالنا",
-   "fixes": "ما نصلحه",
+   "fixes": "الحل",
    "why": "أبرور",
    "how": "طريقة العمل",
    "plan": "المخطِّط",
